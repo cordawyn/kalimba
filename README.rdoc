@@ -29,7 +29,7 @@ are as follows:
 
     module RDFS::Human
       # declare the module as an RDFS class
-      include ActiveRedlander::Resource
+      extend ActiveRedlander::Resource
 
       # define the type URI of the module
       type "http://schema.org/Person"
@@ -39,6 +39,9 @@ are as follows:
     end
 
     module RDFS::Engineer
+      # declare the module as an RDFS class
+      extend ActiveRedlander::Resource
+
       # declare multiple properies of the same type with "has_many"
       has_many :duties, :predicate => NS::Work["duty"], :datatype => NS:XMLSchema["string"]
     end
@@ -49,13 +52,13 @@ within a dedicated namespace, to be able to tell them from the common Ruby modul
 2) define your ActiveRedlander model
 
     class Person
-      # extend your model with your RDFS classes
-      extend RDFS::Human
-      extend RDFS::Engineer # your model may inherit multiple RDFS classes
+      # include your RDFS classes into the model
+      include RDFS::Human
+      include RDFS::Engineer # your model may "inherit" multiple RDFS classes
     end
 
 3) from this point on, you may treat your ActiveRedlander model just like
-any full-fledged clone of ActiveModel (i.e. ActiveRecord)
+any fully-fledged clone of ActiveModel (i.e. ActiveRecord)
 
     $ alice = Person.new(:name => "Alice")
     $ alice.valid?

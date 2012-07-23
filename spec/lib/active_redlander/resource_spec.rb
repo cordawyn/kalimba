@@ -3,12 +3,21 @@ require "spec_helper"
 describe ActiveRedlander::Resource do
   before :all do
     module Human
-      include ActiveRedlander::Resource
+      extend ActiveRedlander::Resource
       type "http://schema.org/Human"
+      property :name, :predicate => "http://xmlns.com/foaf/0.1#name", :datatype => NS::XMLSchema["string"]
+    end
+
+    module Engineer
+      extend ActiveRedlander::Resource
+      type "http://schema.org/Engineer"
+      property :rank, :predicate => "http://works.com#rank", :datatype => NS::XMLSchema["int"]
+      has_many :duties, :predicate => "http://works.com#duty", :datatype => NS::XMLSchema["string"]
     end
 
     class Person
-      extend Human
+      include Human
+      include Engineer
     end
   end
 
@@ -29,6 +38,27 @@ describe ActiveRedlander::Resource do
       it { should be_a Set }
 
       it { should include URI("http://schema.org/Human") }
+      it { should include URI("http://schema.org/Engineer") }
+    end
+
+    describe "instance" do
+      subject { Person.new }
+
+      it { should respond_to :name }
+      it { should respond_to :name= }
+      it { should respond_to :rank }
+      it { should respond_to :rank= }
+      it { should respond_to :duties }
+      it { should respond_to :duties= }
+
+      it { should respond_to :attributes }
+
+      describe "attributes" do
+        let(:person) { Person.new }
+        subject { person.attributes }
+
+        it { should be_a Hash }
+      end
     end
   end
 end
