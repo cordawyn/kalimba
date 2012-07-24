@@ -132,17 +132,12 @@ module ActiveRedlander
     module ModelInstanceMethods
       include Persistence
 
+      attr_reader :subject
       attr_accessor :attributes
 
       def initialize(properties = {})
+        @subject = URI(properties[:_subject]) if properties[:_subject]
         @attributes = {}
-      end
-
-      # Retrieve resource attributes from the backend storage
-      #
-      # @return [void]
-      def reload
-        super
       end
 
       private
