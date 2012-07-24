@@ -6,11 +6,14 @@ require "active_redlander/persistence/redlander"
 
 module ActiveRedlander
   module Persistence
+    # TODO: make it possible to choose a backend
+    # (e.g., Redland, RDF.rb, others)
+    include ActiveRedlander::Persistence::Redlander
+
     class << self
       def create_repository(options = {})
         super
       end
-
     end
 
     def new_record?
@@ -35,6 +38,8 @@ module ActiveRedlander
       @changed_attributes.clear
     end
 
+    private
+
     def generate_subject
       super
       unless @subject
@@ -45,10 +50,5 @@ module ActiveRedlander
         end
       end
     end
-    private :generate_subject
-
-    # TODO: make it possible to choose a backend
-    # (e.g., Redland, RDF.rb, others)
-    include ActiveRedlander::Persistence::Redlander
   end
 end
