@@ -31,6 +31,7 @@ describe ActiveRedlander::Resource do
     it { should_not respond_to :type }
 
     it { should respond_to :types }
+    it { should respond_to :properties }
 
     describe "types" do
       subject { Person.types }
@@ -39,6 +40,16 @@ describe ActiveRedlander::Resource do
 
       it { should include URI("http://schema.org/Human") }
       it { should include URI("http://schema.org/Engineer") }
+    end
+
+    describe "properties" do
+      subject { Person.properties }
+
+      it { should be_a Hash }
+
+      %w(name rank duties).each do |name|
+        it { should have_key name }
+      end
     end
 
     describe "instance" do
