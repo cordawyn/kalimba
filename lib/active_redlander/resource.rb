@@ -126,6 +126,23 @@ module ActiveRedlander
       def initialize(properties = {})
         @attributes = {}
       end
+
+      # Retrieve resource attributes from the backend storage
+      #
+      # @return [void]
+      def reload
+        super
+      end
+
+      private
+
+      def read_attribute(name)
+        attributes[name]
+      end
+
+      def write_attribute(name, value)
+        attributes[name] = value
+      end
     end
   end
 end
