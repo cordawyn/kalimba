@@ -68,6 +68,8 @@ module ActiveRedlander
       # @option params [String, URI] :datatype
       # @return [void]
       def property(name, params = {})
+        params[:predicate] = URI(params[:predicate])
+        params[:datatype] = URI(params[:datatype])
         @properties[name.to_s] = params
       end
 
