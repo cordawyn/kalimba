@@ -2,22 +2,10 @@ require "spec_helper"
 
 describe ActiveRedlander::Resource do
   before :all do
-    module Human
-      extend ActiveRedlander::Resource
-      type "http://schema.org/Human"
-      property :name, :predicate => "http://xmlns.com/foaf/0.1#name", :datatype => NS::XMLSchema["string"]
-    end
-
-    module Engineer
-      extend ActiveRedlander::Resource
-      type "http://schema.org/Engineer"
-      property :rank, :predicate => "http://works.com#rank", :datatype => NS::XMLSchema["int"]
-      has_many :duties, :predicate => "http://works.com#duty", :datatype => NS::XMLSchema["string"]
-    end
-
-    class Person
+    class ResourceTestPerson
       include Human
       include Engineer
+      base_uri "http://example.org/people"
     end
   end
 
@@ -26,7 +14,7 @@ describe ActiveRedlander::Resource do
   it { should respond_to :type }
 
   describe "extended class" do
-    subject { Person }
+    subject { ResourceTestPerson }
 
     it { should_not respond_to :type }
 
@@ -35,7 +23,7 @@ describe ActiveRedlander::Resource do
     it { should respond_to :repository }
 
     describe "types" do
-      subject { Person.types }
+      subject { ResourceTestPerson.types }
 
       it { should be_a Set }
 
@@ -44,7 +32,7 @@ describe ActiveRedlander::Resource do
     end
 
     describe "properties" do
-      subject { Person.properties }
+      subject { ResourceTestPerson.properties }
 
       it { should be_a Hash }
 
@@ -54,14 +42,14 @@ describe ActiveRedlander::Resource do
     end
 
     describe "repository" do
-      subject { Person.repository }
+      subject { ResourceTestPerson.repository }
 
       it { should be_a ::Redlander::Model }
       it { should eql ActiveRedlander.repositories[:default] }
     end
 
     describe "instance" do
-      let(:person) { Person.new }
+      let(:person) { ResourceTestPerson.new }
       subject { person }
 
       it { should respond_to :name }
