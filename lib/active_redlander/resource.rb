@@ -28,6 +28,7 @@ module ActiveRedlander
             extend ModelClassMethods
             include ModelInstanceMethods
             include ActiveModel::AttributeMethods
+            include ActiveModel::Dirty
           end
 
           rdf_resource.instance_variable_set :@repository_id, @repository_id
@@ -141,6 +142,7 @@ module ActiveRedlander
       end
 
       def write_attribute(name, value)
+        attribute_will_change!(name) unless value == attributes[name]
         attributes[name] = value
       end
     end

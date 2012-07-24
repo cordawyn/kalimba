@@ -49,7 +49,7 @@ describe ActiveRedlander::Resource do
       it { should be_a Hash }
 
       %w(name rank duties).each do |name|
-        it { should have_key name }
+        it { should include name }
       end
     end
 
@@ -61,7 +61,8 @@ describe ActiveRedlander::Resource do
     end
 
     describe "instance" do
-      subject { Person.new }
+      let(:person) { Person.new }
+      subject { person }
 
       it { should respond_to :name }
       it { should respond_to :name= }
@@ -73,10 +74,25 @@ describe ActiveRedlander::Resource do
       it { should respond_to :attributes }
 
       describe "attributes" do
-        let(:person) { Person.new }
         subject { person.attributes }
 
         it { should be_a Hash }
+      end
+
+      context "with changes" do
+        before { subject.name = "Bob" }
+
+        it { should be_changed }
+
+        it "should have changed attributes marked" do
+          expect(person.changes).to include "name"
+        end
+
+        context "after save" do
+          before { subject.save }
+
+          it { should_not be_changed }
+        end
       end
     end
   end

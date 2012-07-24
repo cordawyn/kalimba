@@ -10,6 +10,11 @@ module ActiveRedlander
       end
     end
 
+    def save
+      @previously_changed = changes
+      @changed_attributes.clear
+    end
+
     # TODO: make it possible to choose a backend
     # (e.g., Redland, RDF.rb, others)
     include ActiveRedlander::Persistence::Redlander
