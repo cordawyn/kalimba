@@ -1,4 +1,5 @@
 require "uri"
+require "active_redlander/persistence"
 
 module ActiveRedlander
   # Resource declaration module
@@ -29,10 +30,7 @@ module ActiveRedlander
             include ActiveModel::AttributeMethods
           end
 
-          # unless rdf_resource.instance_variable_get(:@types)
-          #   rdf_resource.instance_variable_set(:@types, Set.new)
-          # end
-          # rdf_resource.instance_variable_get(:@types) << @type if @type
+          rdf_resource.instance_variable_set :@repository_id, @repository_id
 
           @properties.each do |name, params|
             rdf_resource.send :define_attribute_method, name
@@ -81,6 +79,22 @@ module ActiveRedlander
     end
 
     module ModelClassMethods
+      # Set ID of the repository used by this RDFS class
+      #
+      # @param [String] rid
+      # @return [void]
+      def use_repository(rid)
+        @repository_id = rid
+      end
+
+      # Instance of the repository used by this RDFS class
+      #
+      # @return [Any]
+      def repository
+        rid = @repository_id || :default
+        ActiveRedlander.repositories[rid]
+      end
+
       # RDFS types that this model inherits
       #
       # @return [Set<URI>]
@@ -105,22 +119,12 @@ module ActiveRedlander
     end
 
     module ModelInstanceMethods
+      include Persistence
+
       attr_accessor :attributes
 
       def initialize(properties = {})
         @attributes = {}
-      end
-
-      def read_attribute(name)
-        # TODO
-      end
-
-      def write_attribute(name, value)
-        # TODO
-      end
-
-      def reload
-        # TODO
       end
     end
   end

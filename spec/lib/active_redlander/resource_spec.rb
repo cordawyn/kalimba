@@ -32,6 +32,7 @@ describe ActiveRedlander::Resource do
 
     it { should respond_to :types }
     it { should respond_to :properties }
+    it { should respond_to :repository }
 
     describe "types" do
       subject { Person.types }
@@ -50,6 +51,13 @@ describe ActiveRedlander::Resource do
       %w(name rank duties).each do |name|
         it { should have_key name }
       end
+    end
+
+    describe "repository" do
+      subject { Person.repository }
+
+      it { should be_a ::Redlander::Model }
+      it { should eql ActiveRedlander.repositories[:default] }
     end
 
     describe "instance" do
