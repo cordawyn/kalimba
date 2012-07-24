@@ -15,7 +15,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = ActiveRedlander::VERSION
 
-  gem.add_runtime_dependency "redlander", "~> 0.4.0"
+  gem.add_runtime_dependency "redlander", "~> 0.4.1"
   gem.add_runtime_dependency "activemodel", "~> 3.2"
 
   gem.add_development_dependency "rspec", "~> 2.11.0"
