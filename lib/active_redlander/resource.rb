@@ -96,6 +96,14 @@ module ActiveRedlander
         ActiveRedlander.repositories[rid]
       end
 
+      # Base URI for the resource
+      #
+      # @param [String, URI] uri
+      # @return [URI]
+      def base_uri(uri = nil)
+        @base_uri ||= uri && URI(uri)
+      end
+
       # RDFS types that this model inherits
       #
       # @return [Set<URI>]
