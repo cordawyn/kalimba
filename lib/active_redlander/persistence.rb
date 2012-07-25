@@ -39,9 +39,10 @@ module ActiveRedlander
 
     # Retrieve model attributes from the backend storage
     #
-    # @return [void]
+    # @return [self]
     def reload
       super
+      self
     end
 
     # Assign attributes from the given hash and persist the model

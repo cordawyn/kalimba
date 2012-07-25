@@ -19,7 +19,16 @@ module ActiveRedlander
       end
 
       def retrieve_attribute(name)
-        raise "TODO"
+        predicate = self.class.properties[name][:predicate]
+
+        if self.class.properties[name][:collection]
+          self.class.repository.statements
+            .all(:subject => subject, :predicate => predicate)
+            .map { |statement| statement.object.value }
+        else
+          statement = self.class.repository.statements.first(:subject => subject, :predicate => predicate)
+          statement && statement.object.value
+        end
       end
 
       def store_attribute(name)
@@ -30,15 +39,17 @@ module ActiveRedlander
         value = read_attribute(name)
         if value
           if self.class.properties[name][:collection]
-            value.to_set.each { |v| store_single_value(predicate, v) }
+            value.to_set.all? { |v| store_single_value(predicate, v) }
           else
             store_single_value(predicate, value)
           end
+        else
+          true
         end
       end
 
       def reload
-        raise "TODO"
+        self.class.properties.each { |name, _| attributes[name] = retrieve_attribute(name) }
       end
 
       def save

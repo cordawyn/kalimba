@@ -56,6 +56,22 @@ describe ActiveRedlander::Persistence do
         end
       end
     end
+
+    describe "reload" do
+      subject { PersistenceTestPerson.new(:_subject => person.subject) }
+
+      context "with related data in the storage" do
+        before { person.update_attributes(:rank => 7, :duties => %w(idling procrastinating)) }
+
+        it "should assign attributes the values from the storage" do
+          expect { subject.reload }.to change(subject, :rank).from(nil).to(person.rank)
+        end
+
+        it "should assign attributes the collections from the storage" do
+          expect { subject.reload }.to change(subject, :duties).from([]).to(person.duties)
+        end
+      end
+    end
   end
 
   describe "already persisted record" do
