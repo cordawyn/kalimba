@@ -18,6 +18,20 @@ module ActiveRedlander
         @persisted ||= !subject.nil? && self.class.repository.statements.exist?(:subject => subject)
       end
 
+      def reload
+        self.class.properties.each { |name, _| attributes[name] = retrieve_attribute(name) }
+      end
+
+      def save
+        update_types_data && changes.all? { |name, _| store_attribute(name) }
+      end
+
+      private
+
+      def generate_subject
+        nil
+      end
+
       def retrieve_attribute(name)
         predicate = self.class.properties[name][:predicate]
 
@@ -46,20 +60,6 @@ module ActiveRedlander
         else
           true
         end
-      end
-
-      def reload
-        self.class.properties.each { |name, _| attributes[name] = retrieve_attribute(name) }
-      end
-
-      def save
-        update_types_data && changes.all? { |name, _| store_attribute(name) }
-      end
-
-      private
-
-      def generate_subject
-        nil
       end
 
       def update_types_data
