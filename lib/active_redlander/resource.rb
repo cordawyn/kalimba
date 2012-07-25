@@ -150,6 +150,7 @@ module ActiveRedlander
                   end
           attrs.merge(name => value)
         end
+        @destroyed = false
       end
 
       # Assign attributes from the given hash

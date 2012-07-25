@@ -11,15 +11,19 @@ module ActiveRedlander
       end
 
       def new_record?
-        !persisted?
+        !(destroyed? || persisted?)
       end
 
       def persisted?
-        @persisted ||= !subject.nil? && self.class.repository.statements.exist?(:subject => subject)
+        !subject.nil? && self.class.repository.statements.exist?(:subject => subject)
       end
 
       def reload
         self.class.properties.each { |name, _| attributes[name] = retrieve_attribute(name) }
+      end
+
+      def destroy
+        self.class.repository.statements.delete_all(:subject => subject)
       end
 
       def save

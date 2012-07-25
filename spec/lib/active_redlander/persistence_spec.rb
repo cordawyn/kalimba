@@ -93,6 +93,18 @@ describe ActiveRedlander::Persistence do
       it { should be_a URI }
     end
 
+    describe "destroy" do
+      before { @another = PersistenceTestPerson.new.save }
+
+      it "should remove the record from the storage" do
+        expect { subject.destroy }.to change(subject.class.repository.statements, :size).by(-1)
+        subject.should_not be_new_record
+        subject.should_not be_persisted
+        subject.should be_destroyed
+        subject.should be_frozen
+      end
+    end
+
     describe "update_attributes" do
       subject { person.update_attributes(:rank => 9) }
 

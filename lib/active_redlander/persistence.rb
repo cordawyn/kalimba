@@ -37,12 +37,32 @@ module ActiveRedlander
       super
     end
 
+    # Check whether the model has been destroyed
+    # (remove from the storage)
+    #
+    # @return [Boolean]
+    def destroyed?
+      @destroyed
+    end
+
     # Retrieve model attributes from the backend storage
     #
     # @return [self]
     def reload
       super
       self
+    end
+
+    # Remove the resource from the backend storage
+    #
+    # @return [Boolean]
+    def destroy
+      if !destroyed? && persisted? && super
+        @destroyed = true
+        freeze
+      else
+        false
+      end
     end
 
     # Assign attributes from the given hash and persist the model
