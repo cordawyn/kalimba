@@ -8,18 +8,57 @@ describe ActiveRedlander::Persistence do
     end
   end
 
-  let(:person) { PersistenceTestPerson.new }
-  subject { PersistenceTestPerson.repository.statements }
+  describe "new record" do
+    let(:person) { PersistenceTestPerson.new }
+    subject { person }
 
-  context "with changes" do
-    before { person.rank = 1 }
+    it { should be_new_record }
+    it { should_not be_persisted }
 
-    context "when saved" do
-      before { person.save }
+    describe "subject" do
+      subject { person.subject }
 
-      it "should be added statements with changed attributes" do
-        expect(subject.size).to eql 2
+      it { should be_nil }
+    end
+
+    context "with changes" do
+      context "to single values" do
+        before { person.rank = 1 }
+
+        context "when saved" do
+          before { subject.save }
+
+          it "should be added statements with changed attributes" do
+            expect(subject.class.repository.statements.size).to eql 2
+          end
+        end
       end
+
+      context "to collections" do
+        before { person.duties = %w(building designing) }
+
+        context "when saved" do
+          before { person.save }
+
+          it "should be added statements with changed attributes" do
+            expect(subject.class.repository.statements.size).to eql 3
+          end
+        end
+      end
+    end
+  end
+
+  describe "already persisted record" do
+    let(:person) { PersistenceTestPerson.new.tap {|person| person.save } }
+    subject { person }
+
+    it { should_not be_new_record }
+    it { should be_persisted }
+
+    describe "subject" do
+      subject { person.subject }
+
+      it { should be_a URI }
     end
   end
 end

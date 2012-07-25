@@ -23,8 +23,18 @@ module ActiveRedlander
       end
 
       def store_attribute(name)
-        delete_previous_data(name)
-        add_new_data(name)
+        predicate = self.class.properties[name][:predicate]
+
+        self.class.repository.statements.delete_all(:subject => subject, :predicate => predicate)
+
+        value = read_attribute(name)
+        if value
+          if self.class.properties[name][:collection]
+            value.each {|v| store_single_value(predicate, v) }
+          else
+            store_single_value(predicate, value)
+          end
+        end
       end
 
       def reload
@@ -60,19 +70,9 @@ module ActiveRedlander
         deleting.each { |statement| self.class.repository.statements.delete(statement) }
       end
 
-      def delete_previous_data(name)
-        predicate = self.class.properties[name][:predicate]
-        self.class.repository.statements.delete_all(:subject => subject, :predicate => predicate)
-      end
-
-      def add_new_data(name)
-        predicate = self.class.properties[name][:predicate]
-        value = read_attribute(name)
-        if value
-          value = ::Redlander::Node.new(value)
-          statement = ::Redlander::Statement.new(:subject => subject, :predicate => predicate, :object => value)
-          self.class.repository.statements.add(statement)
-        end
+      def store_single_value(predicate, value)
+        statement = ::Redlander::Statement.new(:subject => subject, :predicate => predicate, :object => ::Redlander::Node.new(value))
+        self.class.repository.statements.add(statement)
       end
 
       def self.included(base)
