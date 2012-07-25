@@ -139,7 +139,6 @@ module ActiveRedlander
       def initialize(properties = {})
         @subject = URI(properties[:_subject]) if properties[:_subject]
         @attributes = {}
-        @persisted = false
       end
 
       private

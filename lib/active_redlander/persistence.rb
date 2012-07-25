@@ -21,7 +21,7 @@ module ActiveRedlander
     end
 
     def persisted?
-      @persisted
+      super
     end
 
     def store_attribute(name)
@@ -40,7 +40,6 @@ module ActiveRedlander
       super
       @previously_changed = changes
       @changed_attributes.clear
-      @persisted = true
     end
 
     private

@@ -11,11 +11,11 @@ module ActiveRedlander
       end
 
       def new_record?
-        if subject
-          !self.class.repository.statements.exist?(:subject => subject)
-        else
-          true
-        end
+        !persisted?
+      end
+
+      def persisted?
+        @persisted ||= !subject.nil? && self.class.repository.statements.exist?(:subject => subject)
       end
 
       def retrieve_attribute(name)
