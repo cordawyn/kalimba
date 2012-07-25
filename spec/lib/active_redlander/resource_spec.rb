@@ -67,6 +67,16 @@ describe ActiveRedlander::Resource do
 
       it { should respond_to :attributes }
 
+      context "created via 'for'" do
+        subject { ResourceTestPerson.for "http://example.com/people#charlie" }
+
+        it { should be_a ResourceTestPerson }
+
+        it "should set subject to the given URI" do
+          expect(subject.subject).to eql URI("http://example.com/people#charlie")
+        end
+      end
+
       describe "attributes" do
         subject { person.attributes }
 

@@ -123,6 +123,15 @@ module ActiveRedlander
         rdfs_ancestors.inject({}) { |ps, parent| ps.merge(parent.properties) }
       end
 
+      # Create a new record with the given subject URI
+      #
+      # @param [String, URI] uri subject URI
+      # @param [Hash<[Symbol, String] => Any>] properties (see {#initialize})
+      # @return [Object] instance of the model
+      def for(uri, properties = {})
+        new(properties.merge(:_subject => uri))
+      end
+
       private
 
       def rdfs_ancestors
