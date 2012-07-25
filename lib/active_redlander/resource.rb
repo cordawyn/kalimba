@@ -143,12 +143,12 @@ module ActiveRedlander
         properties = properties.stringify_keys
         @subject = URI(properties.delete("_subject")) if properties["_subject"]
         @attributes = self.class.properties.inject({}) do |attrs, (name, options)|
-          value = if properties[name.to_s]
-                    properties[name.to_s]
+          value = if properties[name]
+                    properties[name]
                   else
                     options[:collection] ? [] : nil
                   end
-          attrs.merge(name.to_s => value)
+          attrs.merge(name => value)
         end
       end
 
