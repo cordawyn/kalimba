@@ -36,7 +36,7 @@ describe ActiveRedlander::Resource do
 
       it { should be_a Hash }
 
-      %w(name rank duties).each do |name|
+      %w(name rank duties retired).each do |name|
         it { should include name }
       end
     end
@@ -58,6 +58,8 @@ describe ActiveRedlander::Resource do
       it { should respond_to :rank= }
       it { should respond_to :duties }
       it { should respond_to :duties= }
+      it { should respond_to :retired }
+      it { should respond_to :retired= }
 
       it { should respond_to :to_model }
       it { should respond_to :to_key }
@@ -70,7 +72,7 @@ describe ActiveRedlander::Resource do
 
         it { should be_a Hash }
 
-        %w(name rank duties).each do |name|
+        %w(name rank duties retired).each do |name|
           it { should include name }
         end
 
@@ -94,6 +96,7 @@ describe ActiveRedlander::Resource do
             expect(person.name).to eql "Alice"
             expect(person.rank).to eql 3
             expect(person.duties).to eql []
+            expect(person.retired).to be_nil
           end
         end
 
@@ -104,6 +107,7 @@ describe ActiveRedlander::Resource do
             expect(person.name).to eql "Bob"
             expect(person.rank).to be_nil
             expect(person.duties).to eql %w(running)
+            expect(person.retired).to be_nil
           end
         end
       end

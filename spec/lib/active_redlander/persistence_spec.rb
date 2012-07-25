@@ -34,6 +34,20 @@ describe ActiveRedlander::Persistence do
     end
 
     context "with changes" do
+      context "when saved" do
+        it "should have values type cast" do
+          person.rank = "2"
+          expect {
+            person.save && person.reload
+          }.to change(person, :rank).from("2").to(2)
+        end
+
+        it "should not persist non-castable values" do
+          person.retired = true
+          expect(person.save).to be_false
+        end
+      end
+
       context "to single values" do
         before { person.rank = 1 }
 

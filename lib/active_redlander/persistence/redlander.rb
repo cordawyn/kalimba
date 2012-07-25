@@ -56,13 +56,27 @@ module ActiveRedlander
 
         value = read_attribute(name)
         if value
+          datatype = self.class.properties[name][:datatype]
           if self.class.properties[name][:collection]
-            value.to_set.all? { |v| store_single_value(predicate, v) }
+            value.to_set.all? do |v|
+              v = type_cast(v, datatype)
+              store_single_value(predicate, v) unless v.nil?
+            end
           else
-            store_single_value(predicate, value)
+            value = type_cast(value, datatype)
+            store_single_value(predicate, value) unless value.nil?
           end
         else
           true
+        end
+      end
+
+      def type_cast(value, datatype)
+        if XmlSchema.datatype_of(value) == datatype
+          value
+        else
+          v = XmlSchema.instantiate(value.to_s, datatype) rescue nil
+          !v.nil? && XmlSchema.datatype_of(v) == datatype ? v : nil
         end
       end
 

@@ -26,6 +26,7 @@ RSpec.configure do |config|
       type "http://schema.org/Engineer"
       property :rank, :predicate => "http://works.com#rank", :datatype => NS::XMLSchema["int"]
       has_many :duties, :predicate => "http://works.com#duty", :datatype => NS::XMLSchema["string"]
+      property :retired, :predicate => "http://works.com#retired", :datatype => NS::XMLSchema["date"]
     end
   end
 

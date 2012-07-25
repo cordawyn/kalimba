@@ -83,6 +83,7 @@ module ActiveRedlander
       if super
         @previously_changed = changes
         @changed_attributes.clear
+        true
       else
         false
       end
