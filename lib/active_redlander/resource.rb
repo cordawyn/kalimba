@@ -136,9 +136,16 @@ module ActiveRedlander
       attr_reader :subject
       attr_accessor :attributes
 
+      # Create a new record
+      #
+      # @param [Hash<[Symbol, String] => Any>] properties properties to assign
       def initialize(properties = {})
-        @subject = URI(properties[:_subject]) if properties[:_subject]
-        @attributes = {}
+        properties = properties.stringify_keys
+        @subject = URI(properties.delete("_subject")) if properties["_subject"]
+        @attributes = self.class.properties.inject({}) do |attrs, (name, _)|
+          value = properties[name.to_s] ? properties[name.to_s] : nil
+          attrs.merge(name.to_s => value)
+        end
       end
 
       private

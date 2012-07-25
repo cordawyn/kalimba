@@ -70,10 +70,24 @@ describe ActiveRedlander::Resource do
 
         it { should be_a Hash }
 
+        %w(name rank duties).each do |name|
+          it { should include name }
+        end
+
         describe "collections" do
           subject { person.duties }
 
           it { should be_a Enumerable }
+        end
+
+        context "when assigned on initialization" do
+          let(:person) { ResourceTestPerson.new(:name => "Bob", :duties => ["running"]) }
+
+          it "should have accessors return the assigned values" do
+            expect(person.name).to eql "Bob"
+            expect(person.rank).to be_nil
+            expect(person.duties).to eql %w(running)
+          end
         end
       end
 
