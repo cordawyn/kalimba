@@ -142,10 +142,22 @@ module ActiveRedlander
       def initialize(properties = {})
         properties = properties.stringify_keys
         @subject = URI(properties.delete("_subject")) if properties["_subject"]
-        @attributes = self.class.properties.inject({}) do |attrs, (name, _)|
-          value = properties[name.to_s] ? properties[name.to_s] : nil
+        @attributes = self.class.properties.inject({}) do |attrs, (name, options)|
+          value = if properties[name.to_s]
+                    properties[name.to_s]
+                  else
+                    options[:collection] ? [] : nil
+                  end
           attrs.merge(name.to_s => value)
         end
+      end
+
+      # Assign attributes from the given hash
+      #
+      # @param [Hash<[Symbol, String] => Any>] properties
+      # @return [void]
+      def assign_attributes(properties = {})
+        properties.each { |name, value| send("#{name}=", value) }
       end
 
       private

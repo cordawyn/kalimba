@@ -75,9 +75,20 @@ describe ActiveRedlander::Resource do
         end
 
         describe "collections" do
-          subject { person.duties }
+          it "should be enumerable" do
+            expect(person.duties).to be_a Enumerable
+            expect(person.attributes["duties"]).to be_a Enumerable
+          end
+        end
 
-          it { should be_a Enumerable }
+        context "when assigned via assign_attributes" do
+          before { person.assign_attributes(:rank => 3, :name => "Alice") }
+
+          it "should have accessors return the assigned values" do
+            expect(person.name).to eql "Alice"
+            expect(person.rank).to eql 3
+            expect(person.duties).to eql []
+          end
         end
 
         context "when assigned on initialization" do
