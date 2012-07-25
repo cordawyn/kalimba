@@ -21,6 +21,12 @@ describe ActiveRedlander::Persistence do
       it { should be_nil }
     end
 
+    describe "return value of #save" do
+      subject { person.save }
+
+      it { should be_true }
+    end
+
     context "with changes" do
       context "to single values" do
         before { person.rank = 1 }

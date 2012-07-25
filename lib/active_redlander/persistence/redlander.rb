@@ -42,8 +42,7 @@ module ActiveRedlander
       end
 
       def save
-        update_types_data
-        changes.each_key { |name| store_attribute(name) }
+        update_types_data && changes.all? { |name, _| store_attribute(name) }
       end
 
       private
@@ -66,8 +65,8 @@ module ActiveRedlander
           end
         end
 
-        existing.each { |statement| self.class.repository.statements.add(statement) }
-        deleting.each { |statement| self.class.repository.statements.delete(statement) }
+        existing.all? { |statement| self.class.repository.statements.add(statement) } &&
+          deleting.all? { |statement| self.class.repository.statements.delete(statement) }
       end
 
       def store_single_value(predicate, value)
