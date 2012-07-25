@@ -62,11 +62,7 @@ module ActiveRedlander
 
       def delete_previous_data(name)
         predicate = self.class.properties[name][:predicate]
-        previous_value = ::Redlander::Node.new(attribute_was(name))
-        if previous_value
-          previous_statement = ::Redlander::Statement.new(:subject => subject, :predicate => predicate, :object => previous_value)
-          self.class.repository.statements.delete(previous_statement)
-        end
+        self.class.repository.statements.delete_all(:subject => subject, :predicate => predicate)
       end
 
       def add_new_data(name)
