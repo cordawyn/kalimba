@@ -59,6 +59,10 @@ describe ActiveRedlander::Resource do
       it { should respond_to :duties }
       it { should respond_to :duties= }
 
+      it { should respond_to :to_model }
+      it { should respond_to :to_key }
+      it { should respond_to :to_param }
+
       it { should respond_to :attributes }
 
       describe "attributes" do

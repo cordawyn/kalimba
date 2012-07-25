@@ -29,6 +29,7 @@ module ActiveRedlander
             include ModelInstanceMethods
             include ActiveModel::AttributeMethods
             include ActiveModel::Dirty
+            include ActiveModel::Conversion
           end
 
           rdf_resource.instance_variable_set :@repository_id, @repository_id
@@ -138,6 +139,7 @@ module ActiveRedlander
       def initialize(properties = {})
         @subject = URI(properties[:_subject]) if properties[:_subject]
         @attributes = {}
+        @persisted = false
       end
 
       private
