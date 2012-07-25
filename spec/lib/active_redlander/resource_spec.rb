@@ -74,6 +74,12 @@ describe ActiveRedlander::Resource do
           it { should include name }
         end
 
+        context "when the resource is frozen" do
+          before { person.freeze }
+
+          it { should be_frozen }
+        end
+
         describe "collections" do
           it "should be enumerable" do
             expect(person.duties).to be_a Enumerable

@@ -160,6 +160,21 @@ module ActiveRedlander
         properties.each { |name, value| send("#{name}=", value) }
       end
 
+      # Freeze the attributes hash such that associations are still accessible,
+      # even on destroyed records
+      #
+      # @return [self]
+      def freeze
+        @attributes.freeze; self
+      end
+
+      # Checks whether the attributes hash has been frozen
+      #
+      # @return [Boolean]
+      def frozen?
+        @attributes.frozen?
+      end
+
       private
 
       def read_attribute(name)
