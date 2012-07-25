@@ -34,7 +34,7 @@ module ActiveRedlander
 
           rdf_resource.instance_variable_set :@repository_id, @repository_id
 
-          @properties.each do |name, params|
+          @properties.each_key do |name|
             rdf_resource.send :define_attribute_method, name
             rdf_resource.send :define_method, "#{name}=", lambda { |value| write_attribute name, value }
             rdf_resource.send :define_method, name, lambda { read_attribute name }
