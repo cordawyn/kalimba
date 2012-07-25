@@ -19,6 +19,12 @@ describe ActiveRedlander::Persistence do
       subject { person.subject }
 
       it { should be_nil }
+
+      context "after save" do
+        before { person.save }
+
+        it { should be_a URI }
+      end
     end
 
     describe "return value of #save" do

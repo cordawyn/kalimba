@@ -59,7 +59,7 @@ module ActiveRedlander
     # @raise [ActiveRedlanderError] if fails to obtain the subject for a new record
     # @return [Boolean]
     def save
-      generate_subject if new_record?
+      @subject = generate_subject if new_record?
       if super
         @previously_changed = changes
         @changed_attributes.clear
@@ -76,14 +76,12 @@ module ActiveRedlander
     #
     # @return [URI, nil]
     def generate_subject
-      @subject = super
-      unless @subject
+      super ||
         if self.class.base_uri
-          @subject = self.class.base_uri.merge("##{SecureRandom.urlsafe_base64}")
+          self.class.base_uri.merge("##{SecureRandom.urlsafe_base64}")
         else
           raise ActiveRedlander::ActiveRedlanderError, "Cannot generate subject without base URI for #{self.class}"
         end
-      end
     end
   end
 end
