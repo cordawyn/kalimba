@@ -144,7 +144,12 @@ module ActiveRedlander
       private
 
       def read_attribute(name)
-        attributes[name]
+        value = attributes[name]
+        if value
+          value
+        else
+          self.class.properties[name][:collection] ? [] : nil
+        end
       end
 
       def write_attribute(name, value)

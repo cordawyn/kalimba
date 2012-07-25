@@ -69,6 +69,12 @@ describe ActiveRedlander::Resource do
         subject { person.attributes }
 
         it { should be_a Hash }
+
+        describe "collections" do
+          subject { person.duties }
+
+          it { should be_a Enumerable }
+        end
       end
 
       context "with changes" do

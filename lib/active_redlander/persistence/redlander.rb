@@ -30,7 +30,7 @@ module ActiveRedlander
         value = read_attribute(name)
         if value
           if self.class.properties[name][:collection]
-            value.each {|v| store_single_value(predicate, v) }
+            value.to_set.each { |v| store_single_value(predicate, v) }
           else
             store_single_value(predicate, value)
           end
