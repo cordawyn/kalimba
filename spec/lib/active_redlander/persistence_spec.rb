@@ -37,6 +37,10 @@ describe ActiveRedlander::Persistence do
           it "should be added statements with changed attributes" do
             expect(subject.class.repository.statements.size).to eql 2
           end
+
+          it "should have no changes" do
+            expect(subject.changes).to be_empty
+          end
         end
       end
 
@@ -65,6 +69,20 @@ describe ActiveRedlander::Persistence do
       subject { person.subject }
 
       it { should be_a URI }
+    end
+
+    describe "update_attributes" do
+      subject { person.update_attributes(:rank => 9) }
+
+      it { should be_true }
+
+      it "should assign the given attributes" do
+        expect { person.update_attributes(:rank => 0) }.to change(person, :rank).to(0)
+      end
+
+      it "should have no changes" do
+        expect(person.changes).to be_empty
+      end
     end
   end
 end

@@ -44,6 +44,15 @@ module ActiveRedlander
       super
     end
 
+    # Assign attributes from the given hash and persist the model
+    #
+    # @param [Hash<[Symbol, String] => Any>] properties
+    # @return [Boolean]
+    def update_attributes(properties = {})
+      assign_attributes(properties)
+      save
+    end
+
     # Persist the model into the backend storage
     #
     # @raise [ActiveRedlanderError] if fails to obtain the subject for a new record
