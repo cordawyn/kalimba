@@ -185,6 +185,13 @@ module ActiveRedlander
         @attributes.frozen?
       end
 
+      # RDF representation of the model
+      #
+      # @return [URI, nil] subject URI
+      def to_rdf
+        subject
+      end
+
       private
 
       def read_attribute(name)

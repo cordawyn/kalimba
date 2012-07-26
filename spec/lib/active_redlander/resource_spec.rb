@@ -77,6 +77,26 @@ describe ActiveRedlander::Resource do
         end
       end
 
+      describe "serialization" do
+        describe "to_rdf" do
+          subject { person.to_rdf }
+
+          context "for a new record" do
+            let(:person) { ResourceTestPerson.new }
+
+            it { should be_nil }
+          end
+
+          context "for a persisted record or new record with a subject" do
+            let(:person) { ResourceTestPerson.for("http://example.org/people#alice") }
+
+            it { should be_a URI }
+
+            it { should eql person.subject }
+          end
+        end
+      end
+
       describe "attributes" do
         subject { person.attributes }
 
