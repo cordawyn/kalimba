@@ -1,12 +1,12 @@
 require "uri"
-require "active_redlander/persistence"
+require "kalimba/persistence"
 
-module ActiveRedlander
+module Kalimba
   # Resource declaration module
   #
   # @example
   #   module RDFS::Human
-  #     extend ActiveRedlander::Resource
+  #     extend Kalimba::Resource
   #     type "http://schema.org/Human"
   #   end
   module Resource
@@ -96,7 +96,7 @@ module ActiveRedlander
       # @return [Any]
       def repository
         rid = @repository_id || :default
-        ActiveRedlander.repositories[rid]
+        Kalimba.repositories[rid]
       end
 
       # Base URI for the resource

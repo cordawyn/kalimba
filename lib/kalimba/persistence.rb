@@ -2,16 +2,16 @@ require "securerandom"
 
 # TODO: make it possible to choose a backend
 # (e.g., Redland, RDF.rb, others)
-require "active_redlander/persistence/redlander"
+require "kalimba/persistence/redlander"
 
-module ActiveRedlander
+module Kalimba
   # @abstract
   #   Backend implementations should override all methods
   #   that delegate processing to their parent class (invoking "super").
   module Persistence
     # TODO: make it possible to choose a backend
     # (e.g., Redland, RDF.rb, others)
-    include ActiveRedlander::Persistence::Redlander
+    include Kalimba::Persistence::Redlander
 
     class << self
       # Create an instance of the backend storage (repository)
@@ -76,7 +76,7 @@ module ActiveRedlander
 
     # Persist the model into the backend storage
     #
-    # @raise [ActiveRedlanderError] if fails to obtain the subject for a new record
+    # @raise [KalimbaError] if fails to obtain the subject for a new record
     # @return [Boolean]
     def save
       @subject = generate_subject if new_record?
@@ -101,7 +101,7 @@ module ActiveRedlander
         if self.class.base_uri
           self.class.base_uri.merge("##{SecureRandom.urlsafe_base64}")
         else
-          raise ActiveRedlander::ActiveRedlanderError, "Cannot generate subject without base URI for #{self.class}"
+          raise Kalimba::KalimbaError, "Cannot generate subject without base URI for #{self.class}"
         end
     end
   end

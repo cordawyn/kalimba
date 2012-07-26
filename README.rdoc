@@ -1,6 +1,6 @@
-= ActiveRedlander
+= Kalimba
 
-ActiveRedlander is an opinionated clone of ActiveRecord, based on ActiveModel framework.
+Kalimba is an opinionated clone of ActiveRecord, based on ActiveModel framework.
 Combined with the raw power of Redlander gem, it introduces the world of Ruby on Rails
 to the world of RDF, triple storages, LinkedData and Semantic Web.
 The resources of semantic graph storages become accessible in a customary form of "models".
@@ -9,7 +9,7 @@ The resources of semantic graph storages become accessible in a customary form o
 
 Add this line to your application's Gemfile:
 
-    gem 'active_redlander'
+    gem 'kalimba'
 
 And then execute:
 
@@ -17,19 +17,19 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install active_redlander
+    $ gem install kalimba
 
 == Usage
 
-ActiveRedlander is opinionated in that it forces a certain application development,
-or rather, design pattern. Basically, the steps of designing your ActiveRedlander "model"
+Kalimba is opinionated in that it forces a certain application development,
+or rather, design pattern. Basically, the steps of designing your Kalimba "model"
 are as follows:
 
 1) define the base module(s), roughly corresponding to RDFS classes
 
     module RDFS::Human
       # declare the module as an RDFS class
-      extend ActiveRedlander::Resource
+      extend Kalimba::Resource
 
       # define the type URI of the module
       type "http://schema.org/Person"
@@ -40,7 +40,7 @@ are as follows:
 
     module RDFS::Engineer
       # declare the module as an RDFS class
-      extend ActiveRedlander::Resource
+      extend Kalimba::Resource
 
       # declare multiple properies of the same type with "has_many"
       has_many :duties, :predicate => NS::Work["duty"], :datatype => NS:XMLSchema["string"]
@@ -49,7 +49,7 @@ are as follows:
 Note: "RDFS" prefix is optional, but you're advised to place your RDFS classes
 within a dedicated namespace, to be able to tell them from the common Ruby modules.
 
-2) define your ActiveRedlander model
+2) define your Kalimba model
 
     class Person
       # include your RDFS classes into the model
@@ -57,7 +57,7 @@ within a dedicated namespace, to be able to tell them from the common Ruby modul
       include RDFS::Engineer # your model may "inherit" multiple RDFS classes
     end
 
-3) from this point on, you may treat your ActiveRedlander model just like
+3) from this point on, you may treat your Kalimba model just like
 any fully-fledged clone of ActiveModel (i.e. ActiveRecord)
 
     $ alice = Person.new(:name => "Alice")
@@ -65,7 +65,7 @@ any fully-fledged clone of ActiveModel (i.e. ActiveRecord)
     $ alice.save!
     ...
 
-For details refer to YARD documentation for ActiveRedlander::Resource module.
+For details refer to YARD documentation for Kalimba::Resource module.
 
 == Contributing
 

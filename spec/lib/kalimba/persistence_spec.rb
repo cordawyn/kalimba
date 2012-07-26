@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe ActiveRedlander::Persistence do
+describe Kalimba::Persistence do
   before :all do
     class PersistenceTestPerson
       include Engineer

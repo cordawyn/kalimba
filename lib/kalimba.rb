@@ -1,11 +1,11 @@
 require "redlander"
 require "active_model" # TODO: not all is required?
 
-require "active_redlander/version"
-require "active_redlander/exceptions"
-require "active_redlander/resource"
+require "kalimba/version"
+require "kalimba/exceptions"
+require "kalimba/resource"
 
-module ActiveRedlander
+module Kalimba
   class << self
     def repositories
       @repositories ||= {}

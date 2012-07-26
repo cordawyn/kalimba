@@ -1,6 +1,6 @@
 require "redlander"
 
-module ActiveRedlander
+module Kalimba
   module Persistence
     # Redlander-based persistence module
     module Redlander

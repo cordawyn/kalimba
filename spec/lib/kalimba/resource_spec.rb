@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe ActiveRedlander::Resource do
+describe Kalimba::Resource do
   before :all do
     class ResourceTestPerson
       include Human
@@ -45,7 +45,7 @@ describe ActiveRedlander::Resource do
       subject { ResourceTestPerson.repository }
 
       it { should be_a ::Redlander::Model }
-      it { should eql ActiveRedlander.repositories[:default] }
+      it { should eql Kalimba.repositories[:default] }
     end
 
     describe "instance" do

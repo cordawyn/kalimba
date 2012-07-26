@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe ActiveRedlander do
+describe Kalimba do
   subject { described_class }
 
   it { should respond_to :repositories }
@@ -13,8 +13,8 @@ describe ActiveRedlander do
 
   describe "add_repository" do
     it "should add a repository instance" do
-      expect { ActiveRedlander.add_repository(:extra) }.to change(ActiveRedlander.repositories, :size).by(1)
-      expect(ActiveRedlander.repositories[:extra]).to be_a ::Redlander::Model
+      expect { Kalimba.add_repository(:extra) }.to change(Kalimba.repositories, :size).by(1)
+      expect(Kalimba.repositories[:extra]).to be_a ::Redlander::Model
     end
   end
 end

@@ -1,6 +1,6 @@
-require "active_redlander"
+require "kalimba"
 
-ActiveRedlander.add_repository :default
+Kalimba.add_repository :default
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
@@ -16,13 +16,13 @@ RSpec.configure do |config|
 
   config.before :all do
     module Human
-      extend ActiveRedlander::Resource
+      extend Kalimba::Resource
       type "http://schema.org/Human"
       property :name, :predicate => "http://xmlns.com/foaf/0.1#name", :datatype => NS::XMLSchema["string"]
     end
 
     module Engineer
-      extend ActiveRedlander::Resource
+      extend Kalimba::Resource
       type "http://schema.org/Engineer"
       property :rank, :predicate => "http://works.com#rank", :datatype => NS::XMLSchema["int"]
       has_many :duties, :predicate => "http://works.com#duty", :datatype => NS::XMLSchema["string"]
@@ -31,6 +31,6 @@ RSpec.configure do |config|
   end
 
   config.before do
-    ActiveRedlander.repositories[:default].statements.delete_all
+    Kalimba.repositories[:default].statements.delete_all
   end
 end
