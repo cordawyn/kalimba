@@ -67,10 +67,10 @@ module Kalimba
 
     # Assign attributes from the given hash and persist the model
     #
-    # @param [Hash<[Symbol, String] => Any>] properties
+    # @param [Hash<[Symbol, String] => Any>] params
     # @return [Boolean]
-    def update_attributes(properties = {})
-      assign_attributes(properties)
+    def update_attributes(params = {})
+      assign_attributes(params)
       save
     end
 
@@ -79,7 +79,7 @@ module Kalimba
     # @raise [KalimbaError] if fails to obtain the subject for a new record
     # @return [Boolean]
     def save
-      @subject = generate_subject if new_record?
+      @subject ||= generate_subject
       if super
         @previously_changed = changes
         @changed_attributes.clear
@@ -95,6 +95,7 @@ module Kalimba
     # using specific random/default/sequential URI generation capabilities.
     # Otherwise it should return nil.
     #
+    # @raise [Kalimba::KalimbaError] if cannot generate subject URI
     # @return [URI, nil]
     def generate_subject
       super ||

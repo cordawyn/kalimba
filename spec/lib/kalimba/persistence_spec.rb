@@ -2,8 +2,10 @@ require "spec_helper"
 
 describe Kalimba::Persistence do
   before :all do
-    class PersistenceTestPerson
+    module PersistenceTestPerson
+      extend Kalimba::RDFSResource
       include Engineer
+      type "http://schema.org/Person"
       base_uri "http://example.org/people"
     end
   end
@@ -27,10 +29,17 @@ describe Kalimba::Persistence do
       end
     end
 
-    describe "return value of #save" do
-      subject { person.save }
+    describe "save" do
+      it "should return true" do
+        expect(person.save).to be_true
+      end
 
-      it { should be_true }
+      it "should persist the record" do
+        person.save
+        person.should_not be_new_record
+        person.should_not be_changed
+        person.should be_persisted
+      end
     end
 
     context "with changes" do
@@ -48,18 +57,32 @@ describe Kalimba::Persistence do
         end
       end
 
-      context "to single values" do
+      context "to a single value" do
         before { person.rank = 1 }
 
         context "when saved" do
           before { subject.save }
 
           it "should be added statements with changed attributes" do
-            expect(subject.class.repository.statements.size).to eql 2
+            expect(Kalimba.repository.statements.size).to eql (person.class.types.size + 1)
           end
+        end
+      end
 
-          it "should have no changes" do
-            expect(subject.changes).to be_empty
+      context "to an association" do
+        let(:charlie) { PersistenceTestPerson.for("http://example.org/people#charlie") }
+        before { person.boss = charlie }
+
+        context "when saved" do
+          before { subject.save }
+
+          it "should persist the association" do
+            pending
+            # TODO: also avoid cyclic saves on associations
+            # (by passing parent's subject?)
+            charlie.should_not be_new_record
+            charlie.should be_persisted
+            charlie.should_not be_changed
           end
         end
       end
@@ -71,7 +94,7 @@ describe Kalimba::Persistence do
           before { person.save }
 
           it "should be added statements with changed attributes" do
-            expect(subject.class.repository.statements.size).to eql 3
+            expect(Kalimba.repository.statements.size).to eql (person.class.types.size + 2)
           end
         end
       end
@@ -95,8 +118,9 @@ describe Kalimba::Persistence do
   end
 
   describe "already persisted record" do
-    let(:person) { PersistenceTestPerson.new.tap {|person| person.save } }
+    let(:person) { PersistenceTestPerson.new }
     subject { person }
+    before { person.save }
 
     it { should_not be_new_record }
     it { should be_persisted }
@@ -108,14 +132,19 @@ describe Kalimba::Persistence do
     end
 
     describe "destroy" do
-      before { @another = PersistenceTestPerson.new.save }
+      before { @another = PersistenceTestPerson.new; @another.save }
 
       it "should remove the record from the storage" do
-        expect { subject.destroy }.to change(subject.class.repository.statements, :size).by(-1)
+        expect { subject.destroy }.to change(Kalimba.repository.statements, :size).by(-person.class.types.size)
         subject.should_not be_new_record
         subject.should_not be_persisted
         subject.should be_destroyed
         subject.should be_frozen
+      end
+
+      it "should not remove other records from the storage" do
+        subject.destroy
+        expect(Kalimba.repository.statements.exist?(:subject => @another.subject)).to be_true
       end
     end
 

@@ -2,31 +2,26 @@ require "spec_helper"
 
 describe Kalimba::Resource do
   before :all do
-    class ResourceTestPerson
+    module ResourceTestPerson
+      extend Kalimba::RDFSResource
       include Human
       include Engineer
+      type "http://schema.org/Person"
       base_uri "http://example.org/people"
     end
   end
 
-  subject { Human }
-
-  it { should respond_to :type }
-
   describe "extended class" do
     subject { ResourceTestPerson }
 
-    it { should_not respond_to :type }
-
+    it { should respond_to :type }
     it { should respond_to :types }
     it { should respond_to :properties }
-    it { should respond_to :repository }
 
     describe "types" do
       subject { ResourceTestPerson.types }
 
-      it { should be_a Set }
-
+      it { should be_a Enumerable }
       it { should include URI("http://schema.org/Human") }
       it { should include URI("http://schema.org/Engineer") }
     end
@@ -39,13 +34,6 @@ describe Kalimba::Resource do
       %w(name rank duties retired).each do |name|
         it { should include name }
       end
-    end
-
-    describe "repository" do
-      subject { ResourceTestPerson.repository }
-
-      it { should be_a ::Redlander::Model }
-      it { should eql Kalimba.repositories[:default] }
     end
 
     describe "instance" do

@@ -1,18 +1,22 @@
-require "redlander"
+require "set"
 require "active_model" # TODO: not all is required?
 
 require "kalimba/version"
 require "kalimba/exceptions"
-require "kalimba/resource"
+require "kalimba/rdfs_resource"
 
 module Kalimba
   class << self
-    def repositories
-      @repositories ||= {}
+    def repository
+      @repository ||= Persistence.create_repository(@repository_options || {})
     end
 
-    def add_repository(name, options = {})
-      repositories[name.to_sym] = Persistence.create_repository(options)
+    # Set ID of the repository used by this RDFS class
+    #
+    # @param [Hash] options options to be passed to the repository constructor
+    # @return [void]
+    def set_repository_options(options = {})
+      @repository_options = options
     end
   end
 end

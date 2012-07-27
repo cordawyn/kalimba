@@ -1,7 +1,5 @@
 require "kalimba"
 
-Kalimba.add_repository :default
-
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true
@@ -16,21 +14,25 @@ RSpec.configure do |config|
 
   config.before :all do
     module Human
-      extend Kalimba::Resource
+      extend Kalimba::RDFSResource
       type "http://schema.org/Human"
+      base_uri "http://example.org/people"
       property :name, :predicate => "http://xmlns.com/foaf/0.1#name", :datatype => NS::XMLSchema["string"]
     end
 
     module Engineer
-      extend Kalimba::Resource
+      extend Kalimba::RDFSResource
       type "http://schema.org/Engineer"
+      base_uri "http://example.org/people"
       property :rank, :predicate => "http://works.com#rank", :datatype => NS::XMLSchema["int"]
-      has_many :duties, :predicate => "http://works.com#duty", :datatype => NS::XMLSchema["string"]
       property :retired, :predicate => "http://works.com#retired", :datatype => NS::XMLSchema["date"]
+      property :boss, :predicate => "http://schema.org/Human", :datatype => "http://schema.org/Engineer"
+      has_many :duties, :predicate => "http://works.com#duty", :datatype => NS::XMLSchema["string"]
+      has_many :coworkers, :predicate => "http://schema.org/Human", :datatype => "http://schema.org/Engineer"
     end
   end
 
   config.before do
-    Kalimba.repositories[:default].statements.delete_all
+    Kalimba.repository.statements.delete_all
   end
 end
