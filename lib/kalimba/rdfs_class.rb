@@ -105,7 +105,7 @@ module Kalimba
   #     extend Kalimba::RDFSResource
   #     type "http://schema.org/Human"
   #   end
-  module RDFSResource
+  module RDFSClass
     extend RDFSClassMethods
 
     private

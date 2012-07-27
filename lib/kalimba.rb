@@ -3,7 +3,7 @@ require "active_model" # TODO: not all is required?
 
 require "kalimba/version"
 require "kalimba/exceptions"
-require "kalimba/rdfs_resource"
+require "kalimba/rdfs_class"
 
 module Kalimba
   class << self

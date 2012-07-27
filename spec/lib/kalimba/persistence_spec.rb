@@ -3,7 +3,7 @@ require "spec_helper"
 describe Kalimba::Persistence do
   before :all do
     module PersistenceTestPerson
-      extend Kalimba::RDFSResource
+      extend Kalimba::RDFSClass
       include Engineer
       type "http://schema.org/Person"
       base_uri "http://example.org/people"

@@ -3,7 +3,7 @@ require "spec_helper"
 describe Kalimba::Resource do
   before :all do
     module ResourceTestPerson
-      extend Kalimba::RDFSResource
+      extend Kalimba::RDFSClass
       include Human
       include Engineer
       type "http://schema.org/Person"

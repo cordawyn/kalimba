@@ -14,14 +14,14 @@ RSpec.configure do |config|
 
   config.before :all do
     module Human
-      extend Kalimba::RDFSResource
+      extend Kalimba::RDFSClass
       type "http://schema.org/Human"
       base_uri "http://example.org/people"
       property :name, :predicate => "http://xmlns.com/foaf/0.1#name", :datatype => NS::XMLSchema["string"]
     end
 
     module Engineer
-      extend Kalimba::RDFSResource
+      extend Kalimba::RDFSClass
       type "http://schema.org/Engineer"
       base_uri "http://example.org/people"
       property :rank, :predicate => "http://works.com#rank", :datatype => NS::XMLSchema["int"]
