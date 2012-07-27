@@ -71,15 +71,15 @@ describe Kalimba::Persistence do
 
       context "to an association" do
         let(:charlie) { PersistenceTestPerson.for("http://example.org/people#charlie") }
-        before { person.boss = charlie }
+        before do
+          charlie.rank = 99
+          person.boss = charlie
+        end
 
         context "when saved" do
           before { subject.save }
 
           it "should persist the association" do
-            pending
-            # TODO: also avoid cyclic saves on associations
-            # (by passing parent's subject?)
             charlie.should_not be_new_record
             charlie.should be_persisted
             charlie.should_not be_changed

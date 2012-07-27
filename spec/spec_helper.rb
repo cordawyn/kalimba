@@ -26,9 +26,9 @@ RSpec.configure do |config|
       base_uri "http://example.org/people"
       property :rank, :predicate => "http://works.com#rank", :datatype => NS::XMLSchema["int"]
       property :retired, :predicate => "http://works.com#retired", :datatype => NS::XMLSchema["date"]
-      property :boss, :predicate => "http://schema.org/Human", :datatype => "http://schema.org/Engineer"
+      property :boss, :predicate => "http://works.com#boss", :datatype => "http://schema.org/Engineer"
       has_many :duties, :predicate => "http://works.com#duty", :datatype => NS::XMLSchema["string"]
-      has_many :coworkers, :predicate => "http://schema.org/Human", :datatype => "http://schema.org/Engineer"
+      has_many :coworkers, :predicate => "http://works.com#coworker", :datatype => "http://schema.org/Engineer"
     end
   end
 

@@ -26,8 +26,8 @@ module Kalimba
         Kalimba.repository.statements.delete_all(:subject => subject)
       end
 
-      def save
-        update_types_data && changes.all? { |name, _| store_attribute(name) }
+      def save(options = {})
+        update_types_data && changes.all? { |name, _| store_attribute(name, options) }
       end
 
       private
@@ -50,7 +50,7 @@ module Kalimba
         end
       end
 
-      def store_attribute(name)
+      def store_attribute(name, options = {})
         predicate = self.class.properties[name][:predicate]
 
         Kalimba.repository.statements.delete_all(:subject => subject, :predicate => predicate)
@@ -59,13 +59,9 @@ module Kalimba
         if value
           datatype = self.class.properties[name][:datatype]
           if self.class.properties[name][:collection]
-            value.to_set.all? do |v|
-              v = type_cast_to_rdf(v, datatype)
-              store_single_value(predicate, v) unless v.nil?
-            end
+            value.to_set.all? { |v| store_single_value(v, predicate, datatype, options) }
           else
-            value = type_cast_to_rdf(value, datatype)
-            store_single_value(predicate, value) unless value.nil?
+            store_single_value(value, predicate, datatype, options)
           end
         else
           true
@@ -73,9 +69,7 @@ module Kalimba
       end
 
       def type_cast_to_rdf(value, datatype)
-        if value.respond_to?(:to_rdf)
-          value.to_rdf
-        elsif XmlSchema.datatype_of(value) == datatype
+        if XmlSchema.datatype_of(value) == datatype
           value
         else
           v = XmlSchema.instantiate(value.to_s, datatype) rescue nil
@@ -84,12 +78,8 @@ module Kalimba
       end
 
       def type_cast_from_rdf(value, datatype)
-        if self.class.type == datatype
-          klass = self.class.rdfs_ancestors.detect {|a| a.type == self.class.type }
-          klass.for(value)
-        else
-          value
-        end
+        klass = rdfs_class_by_datatype(datatype)
+        klass ? klass.for(value) : value
       end
 
       def update_types_data
@@ -110,9 +100,30 @@ module Kalimba
           deleting.all? { |statement| Kalimba.repository.statements.delete(statement) }
       end
 
-      def store_single_value(predicate, value)
-        statement = ::Redlander::Statement.new(:subject => subject, :predicate => predicate, :object => ::Redlander::Node.new(value))
-        Kalimba.repository.statements.add(statement)
+      def store_single_value(value, predicate, datatype, options = {})
+        value =
+          if value.respond_to?(:to_rdf)
+            if value.is_a?(Kalimba::Resource)
+              # avoid cyclic saves
+              if options[:parent_subject] != value.subject
+                value.save(:parent_subject => subject) if value.changed? || value.new_record?
+              else
+                # do not count skipped cycled saves as errors
+                true
+              end
+            end
+            value.to_rdf
+          else
+            type_cast_to_rdf(value, datatype)
+          end
+        if value
+          statement = ::Redlander::Statement.new(:subject => subject, :predicate => predicate, :object => ::Redlander::Node.new(value))
+          Kalimba.repository.statements.add(statement)
+        end
+      end
+
+      def rdfs_class_by_datatype(datatype)
+        self.class.rdfs_ancestors.detect {|a| a.type == datatype }
       end
 
       def self.included(base)

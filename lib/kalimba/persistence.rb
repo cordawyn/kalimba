@@ -78,7 +78,7 @@ module Kalimba
     #
     # @raise [KalimbaError] if fails to obtain the subject for a new record
     # @return [Boolean]
-    def save
+    def save(options = {})
       @subject ||= generate_subject
       if super
         @previously_changed = changes
