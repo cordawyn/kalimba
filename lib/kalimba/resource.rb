@@ -1,5 +1,7 @@
 require "kalimba/persistence"
 
+# TODO: move all stuff (instance methods) to RDFSClass?
+
 module Kalimba
   class Resource
     include Persistence

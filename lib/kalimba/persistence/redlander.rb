@@ -8,6 +8,16 @@ module Kalimba
         def create_repository(options = {})
           ::Redlander::Model.new(options)
         end
+
+        def exist?(attributes = {})
+          Kalimba.repository.statements.exist?(attributes.merge(:predicate => NS::RDF["type"], :object => type))
+        end
+
+        def destroy_all
+          Kalimba.repository.statements.each(:predicate => NS::RDF["type"], :object => type) do |statement|
+            Kalimba.repository.statements.delete_all(:subject => statement.subject)
+          end
+        end
       end
 
       def new_record?

@@ -8,6 +8,45 @@ describe Kalimba::Persistence do
       type "http://schema.org/Person"
       base_uri "http://example.org/people"
     end
+
+    module PersistenceTestOilRig
+      extend Kalimba::RDFSClass
+      type "http://schema.org/OilRig"
+      base_uri "http://example.org/oil_rigs"
+    end
+  end
+
+  describe "destroy_all" do
+    before do
+      PersistenceTestPerson.new.save
+      @rig = PersistenceTestOilRig.new
+      @rig.save
+    end
+
+    it "should destroy all instances of the given RDFS class" do
+      expect { PersistenceTestPerson.destroy_all }.to change(Kalimba.repository, :size).by(-2)
+    end
+
+    it "should not destroy instances of other RDFS classes" do
+      PersistenceTestPerson.destroy_all
+      expect(PersistenceTestOilRig.exist?(:subject => @rig.subject)).to be_true
+    end
+  end
+
+  describe "exist?" do
+    subject { PersistenceTestPerson.exist? }
+
+    context "when there are no RDFS class instances in the repository" do
+      before { PersistenceTestPerson.new }
+
+      it { should be_false }
+    end
+
+    context "when there are RDFS class instances in the repository" do
+      before { PersistenceTestPerson.new.save }
+
+      it { should be_true }
+    end
   end
 
   describe "new record" do
@@ -64,7 +103,7 @@ describe Kalimba::Persistence do
           before { subject.save }
 
           it "should be added statements with changed attributes" do
-            expect(Kalimba.repository.statements.size).to eql (person.class.types.size + 1)
+            expect(Kalimba.repository.size).to eql (person.class.types.size + 1)
           end
         end
       end
@@ -94,7 +133,7 @@ describe Kalimba::Persistence do
           before { person.save }
 
           it "should be added statements with changed attributes" do
-            expect(Kalimba.repository.statements.size).to eql (person.class.types.size + 2)
+            expect(Kalimba.repository.size).to eql (person.class.types.size + 2)
           end
         end
       end
@@ -135,7 +174,7 @@ describe Kalimba::Persistence do
       before { @another = PersistenceTestPerson.new; @another.save }
 
       it "should remove the record from the storage" do
-        expect { subject.destroy }.to change(Kalimba.repository.statements, :size).by(-person.class.types.size)
+        expect { subject.destroy }.to change(Kalimba.repository, :size).by(-person.class.types.size)
         subject.should_not be_new_record
         subject.should_not be_persisted
         subject.should be_destroyed

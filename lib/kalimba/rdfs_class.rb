@@ -112,6 +112,7 @@ module Kalimba
 
     def self.extended(base)
       base.send :extend, RDFSClassMethods
+      base.send :extend, Persistence::ClassMethods
     end
   end
 end

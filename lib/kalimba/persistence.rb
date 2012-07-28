@@ -13,12 +13,31 @@ module Kalimba
     # (e.g., Redland, RDF.rb, others)
     include Kalimba::Persistence::Redlander
 
-    class << self
+    module ClassMethods
+      # TODO: make it possible to choose a backend
+      # (e.g., Redland, RDF.rb, others)
+      include Kalimba::Persistence::Redlander::ClassMethods
+
       # Create an instance of the backend storage (repository)
       #
       # @param [Hash] options backend storage options
       # @return [Any] instance of the backend storage
       def create_repository(options = {})
+        super
+      end
+
+      # Check whether instances of the RDFS class exist in the repository
+      #
+      # @param [Hash<[Symbol, String] => Any>] attributes
+      # @return [Boolean]
+      def exist?(attributes = {})
+        super
+      end
+
+      # Remove all instances of the RDFSClass from the repository
+      #
+      # @return [Boolean]
+      def destroy_all
         super
       end
     end
