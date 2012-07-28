@@ -26,6 +26,14 @@ module Kalimba
         super
       end
 
+      # Create a new instance of RDFS class
+      #
+      # @param [Hash<Symbol, String> => Any] attributes
+      # @return [Resource, nil]
+      def create(attributes = {})
+        super
+      end
+
       # Check whether instances of the RDFS class exist in the repository
       #
       # @param [Hash<[Symbol, String] => Any>] attributes

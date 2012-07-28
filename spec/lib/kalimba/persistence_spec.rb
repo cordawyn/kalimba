@@ -16,20 +16,29 @@ describe Kalimba::Persistence do
     end
   end
 
-  describe "destroy_all" do
-    before do
-      PersistenceTestPerson.new.save
-      @rig = PersistenceTestOilRig.new
-      @rig.save
+  describe "create" do
+    let(:person) { PersistenceTestPerson.create }
+    subject { person }
+
+    it { should be_a Kalimba::Resource }
+
+    it "should persist the instance" do
+      subject.should be_persisted
+      subject.should_not be_new_record
     end
+  end
+
+  describe "destroy_all" do
+    before { PersistenceTestPerson.create }
 
     it "should destroy all instances of the given RDFS class" do
       expect { PersistenceTestPerson.destroy_all }.to change(Kalimba.repository, :size).by(-2)
     end
 
     it "should not destroy instances of other RDFS classes" do
+      rig = PersistenceTestOilRig.create
       PersistenceTestPerson.destroy_all
-      expect(PersistenceTestOilRig.exist?(:subject => @rig.subject)).to be_true
+      expect(PersistenceTestOilRig.exist?(:subject => rig.subject)).to be_true
     end
   end
 
@@ -43,7 +52,7 @@ describe Kalimba::Persistence do
     end
 
     context "when there are RDFS class instances in the repository" do
-      before { PersistenceTestPerson.new.save }
+      before { PersistenceTestPerson.create }
 
       it { should be_true }
     end
@@ -171,7 +180,7 @@ describe Kalimba::Persistence do
     end
 
     describe "destroy" do
-      before { @another = PersistenceTestPerson.new; @another.save }
+      before { @another = PersistenceTestPerson.create }
 
       it "should remove the record from the storage" do
         expect { subject.destroy }.to change(Kalimba.repository, :size).by(-person.class.types.size)

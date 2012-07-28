@@ -13,6 +13,11 @@ module Kalimba
           Kalimba.repository.statements.exist?(attributes.merge(:predicate => NS::RDF["type"], :object => type))
         end
 
+        def create(attributes = {})
+          record = new(attributes)
+          record.save ? record : nil
+        end
+
         def destroy_all
           Kalimba.repository.statements.each(:predicate => NS::RDF["type"], :object => type) do |statement|
             Kalimba.repository.statements.delete_all(:subject => statement.subject)
