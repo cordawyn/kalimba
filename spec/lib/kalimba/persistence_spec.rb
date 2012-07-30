@@ -38,7 +38,7 @@ describe Kalimba::Persistence do
     it "should not destroy instances of other RDFS classes" do
       rig = PersistenceTestOilRig.create
       PersistenceTestPerson.destroy_all
-      expect(PersistenceTestOilRig.exist?(:subject => rig.subject)).to be_true
+      expect(PersistenceTestOilRig.exist?).to be_true
     end
   end
 

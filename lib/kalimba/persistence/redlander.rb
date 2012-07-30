@@ -10,7 +10,8 @@ module Kalimba
         end
 
         def exist?(attributes = {})
-          Kalimba.repository.statements.exist?(attributes.merge(:predicate => NS::RDF["type"], :object => type))
+          q = "ASK { #{resource_definition} . #{attributes_to_graph_query(attributes)} }"
+          Kalimba.repository.query(q)
         end
 
         def create(attributes = {})
@@ -22,6 +23,24 @@ module Kalimba
           Kalimba.repository.statements.each(:predicate => NS::RDF["type"], :object => type) do |statement|
             Kalimba.repository.statements.delete_all(:subject => statement.subject)
           end
+        end
+
+        private
+
+        def resource_definition
+          [ "?subject", ::Redlander::Node.new(NS::RDF['type']), ::Redlander::Node.new(type) ].join(" ")
+        end
+
+        def attributes_to_graph_query(attributes = {})
+          attributes.map { |name, value|
+            if value.is_a?(Enumerable)
+              value.map { |v| attributes_to_graph_query(name => v) }.join(" . ")
+            else
+              [ "?subject",
+                ::Redlander::Node.new(properties[name][:predicate]),
+                ::Redlander::Node.new(value) ].join(" ")
+            end
+          }.join(" . ")
         end
       end
 
