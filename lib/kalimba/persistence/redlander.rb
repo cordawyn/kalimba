@@ -61,13 +61,21 @@ module Kalimba
       end
 
       def save(options = {})
-        update_types_data && changes.all? { |name, _| store_attribute(name, options) }
+        store_attributes(options) && update_types_data
       end
 
       private
 
       def generate_subject
         nil
+      end
+
+      def store_attributes(options = {})
+        if new_record?
+          attributes.all? { |name, value| value.nil? || store_attribute(name, options) }
+        else
+          changes.all? { |name, _| store_attribute(name, options) }
+        end
       end
 
       def retrieve_attribute(name)
