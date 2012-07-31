@@ -17,7 +17,7 @@ module Kalimba
               yield self.for(binding["subject"].uri)
             end
           else
-            Kalimba.repository.query(q).map { |binding| self.for(binding["subject"].uri) }
+            Kalimba.repository.query(q).map { |binding| self.for(binding["subject"].uri.fragment) }
           end
         end
 

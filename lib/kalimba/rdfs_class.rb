@@ -70,11 +70,23 @@ module Kalimba
 
     # Create a new record with the given subject URI
     #
-    # @param [String, URI] uri subject URI
+    # @note
+    #   In the world of RDF a resource cannot be instantly defined as "new",
+    #   because any arbitrary subject you define might be already present
+    #   in the storage (see: "Open World Assumption").
+    #   So you can supply an ID of an existing resource.
+    #   Don't forget to {#reload} it, if you need its actual attributes
+    #   instantiated as well.
+    #
+    # @note
+    #   The resource ID that you supply will be added as an URI
+    #   fragment to base_uri (or raise an error if base_uri is not defined).
+    #
+    # @param [String] rid ID to use for the resource
     # @param [Hash<[Symbol, String] => Any>] params (see {RDFSResource#initialize})
     # @return [Object] instance of the model
-    def for(uri, params = {})
-      new(params.merge(:_subject => uri))
+    def for(rid, params = {})
+      new(params.merge(:_subject => rid))
     end
 
     def new(params = {})

@@ -56,12 +56,12 @@ describe Kalimba::Resource do
       it { should respond_to :attributes }
 
       context "created via 'for'" do
-        subject { ResourceTestPerson.for "http://example.com/people#charlie" }
+        subject { ResourceTestPerson.for "charlie" }
 
         it { should be_a ResourceTestPerson }
 
         it "should set subject to the given URI" do
-          expect(subject.subject).to eql URI("http://example.com/people#charlie")
+          expect(subject.subject).to eql URI("http://example.org/people/#charlie")
         end
       end
 
@@ -76,7 +76,7 @@ describe Kalimba::Resource do
           end
 
           context "for a persisted record or new record with a subject" do
-            let(:person) { ResourceTestPerson.for("http://example.org/people#alice") }
+            let(:person) { ResourceTestPerson.for("alice") }
 
             it { should be_a URI }
 

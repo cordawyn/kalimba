@@ -18,7 +18,14 @@ module Kalimba
     # @param [Hash<[Symbol, String] => Any>] params properties to assign
     def initialize(params = {})
       params = params.stringify_keys
-      @subject = URI(params.delete("_subject")) if params["_subject"]
+      if params["_subject"]
+        if self.class.base_uri
+          @subject = self.class.base_uri.dup
+          @subject.fragment = params.delete("_subject")
+        else
+          raise KalimbaError, "Cannot assign an ID to a resource without base_uri"
+        end
+      end
       @attributes = self.class.properties.inject({}) do |attrs, (name, options)|
         value = if params[name]
                   params[name]

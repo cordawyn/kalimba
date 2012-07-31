@@ -162,7 +162,7 @@ describe Kalimba::Persistence do
       end
 
       context "to an association" do
-        let(:charlie) { PersistenceTestPerson.for("http://example.org/people#charlie") }
+        let(:charlie) { PersistenceTestPerson.for("charlie") }
         before do
           charlie.rank = 99
           person.boss = charlie
@@ -193,7 +193,7 @@ describe Kalimba::Persistence do
     end
 
     describe "reload" do
-      subject { PersistenceTestPerson.new(:_subject => person.subject) }
+      subject { PersistenceTestPerson.for(person.id) }
 
       context "with related data in the storage" do
         before { person.update_attributes(:rank => 7, :duties => %w(idling procrastinating)) }
