@@ -16,6 +16,50 @@ describe Kalimba::Persistence do
     end
   end
 
+  describe "find" do
+    let(:options) { {:conditions => {:rank => 4}} }
+
+    context "when records are found" do
+      before do
+        PersistenceTestPerson.create(:rank => 4, :duties => %w(sex sleep eat drink dream))
+      end
+
+      describe ":first" do
+        subject { PersistenceTestPerson.find(:first, options) }
+
+        it { should be_a PersistenceTestPerson }
+      end
+
+      describe ":all" do
+        subject { PersistenceTestPerson.find(:all, options) }
+
+        it { should be_a Enumerable }
+        it "should return an array of found entries" do
+          subject.size.should eql 1
+          subject.first.should be_a PersistenceTestPerson
+        end
+      end
+    end
+
+    context "when records are not found" do
+      before do
+        PersistenceTestPerson.create(:rank => 0, :duties => %w(sex sleep eat drink dream))
+      end
+
+      describe ":first" do
+        subject { PersistenceTestPerson.find(:first, options) }
+
+        it { should be_nil }
+      end
+
+      describe ":all" do
+        subject { PersistenceTestPerson.find(:all, options) }
+
+        it { should be_empty }
+      end
+    end
+  end
+
   describe "create" do
     let(:person) { PersistenceTestPerson.create }
     subject { person }

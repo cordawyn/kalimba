@@ -48,6 +48,21 @@ module Kalimba
       def destroy_all
         super
       end
+
+      def find(scope, options = {})
+        case scope
+        when :first
+          find_each(options).first
+        when :all
+          find_each(options)
+        else
+          find(:first, :conditions => {:id => scope})
+        end
+      end
+
+      def find_each(options = {})
+        super
+      end
     end
 
     # Check whether the model has never been persisted

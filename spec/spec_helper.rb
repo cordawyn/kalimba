@@ -24,7 +24,7 @@ RSpec.configure do |config|
       extend Kalimba::RDFSClass
       type "http://schema.org/Engineer"
       base_uri "http://example.org/people"
-      property :rank, :predicate => "http://works.com#rank", :datatype => NS::XMLSchema["int"]
+      property :rank, :predicate => "http://works.com#rank", :datatype => NS::XMLSchema["integer"]
       property :retired, :predicate => "http://works.com#retired", :datatype => NS::XMLSchema["date"]
       property :boss, :predicate => "http://works.com#boss", :datatype => "http://schema.org/Engineer"
       has_many :duties, :predicate => "http://works.com#duty", :datatype => NS::XMLSchema["string"]

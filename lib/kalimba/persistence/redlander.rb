@@ -9,7 +9,20 @@ module Kalimba
           ::Redlander::Model.new(options)
         end
 
+        def find_each(options = {})
+          attributes = (options[:conditions] || {}).stringify_keys
+          q = "SELECT ?subject WHERE { #{resource_definition} . #{attributes_to_graph_query(attributes)} }"
+          if block_given?
+            Kalimba.repository.query(q) do |binding|
+              yield self.for(binding["subject"].uri)
+            end
+          else
+            Kalimba.repository.query(q).map { |binding| self.for(binding["subject"].uri) }
+          end
+        end
+
         def exist?(attributes = {})
+          attributes = attributes.stringify_keys
           q = "ASK { #{resource_definition} . #{attributes_to_graph_query(attributes)} }"
           Kalimba.repository.query(q)
         end
