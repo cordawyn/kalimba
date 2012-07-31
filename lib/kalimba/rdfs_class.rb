@@ -45,7 +45,7 @@ module Kalimba
     # @param [String, URI] uri
     # @return [URI]
     def base_uri(uri = nil)
-      @base_uri ||= uri && URI(uri)
+      @base_uri ||= uri && URI(uri.to_s.sub(/\/?$/, "/"))
     end
 
     # Property definition
