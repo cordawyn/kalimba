@@ -65,6 +65,10 @@ module Kalimba
       end
     end
 
+    def id
+      subject && subject.fragment
+    end
+
     # Check whether the model has never been persisted
     #
     # @return [Boolean]
@@ -142,7 +146,8 @@ module Kalimba
     def generate_subject
       super ||
         if self.class.base_uri
-          self.class.base_uri.merge("##{SecureRandom.urlsafe_base64}")
+          self.class.base_uri.fragment = SecureRandom.urlsafe_base64
+          self.class.base_uri
         else
           raise Kalimba::KalimbaError, "Cannot generate subject without base URI for #{self.class}"
         end
