@@ -16,8 +16,9 @@ module Kalimba
     # Create a new record
     #
     # @param [Hash<[Symbol, String] => Any>] params properties to assign
-    def initialize(params = {})
+    def initialize(params = {}, options = {})
       params = params.stringify_keys
+
       if params["_subject"]
         if self.class.base_uri
           @subject = self.class.base_uri.dup
@@ -26,22 +27,24 @@ module Kalimba
           raise KalimbaError, "Cannot assign an ID to a resource without base_uri"
         end
       end
+
       @attributes = self.class.properties.inject({}) do |attrs, (name, options)|
-        value = if params[name]
-                  params[name]
-                else
-                  options[:collection] ? [] : nil
-                end
+        value = options[:collection] ? [] : nil
         attrs.merge(name => value)
       end
+      assign_attributes(params, options)
+
       @destroyed = false
+
+      yield self if block_given?
     end
 
     # Assign attributes from the given hash
     #
     # @param [Hash<[Symbol, String] => Any>] params
+    # @param [Hash] options
     # @return [void]
-    def assign_attributes(params = {})
+    def assign_attributes(params = {}, options = {})
       params.each { |name, value| send("#{name}=", value) }
     end
 
