@@ -8,7 +8,7 @@ require "kalimba/rdfs_class"
 module Kalimba
   class << self
     def repository
-      @repository ||= Persistence::Redlander.create_repository(@repository_options || {})
+      @repository ||= Persistence.create_repository(@repository_options || {})
     end
 
     # Set ID of the repository used by this RDFS class

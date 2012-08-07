@@ -15,6 +15,13 @@ module Kalimba
       raise NotImplementedError
     end
 
+    # Module of the persistence backend
+    #
+    # @return [Module]
+    def self.backend
+      self
+    end
+
     module ClassMethods
       # Create a new instance of RDFS class
       #

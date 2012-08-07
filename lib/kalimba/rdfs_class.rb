@@ -2,7 +2,6 @@ require "kalimba/resource"
 # TODO: make it possible to choose a backend
 # (e.g., Redland, RDF.rb, others)
 require "kalimba/persistence/redlander"
-# require "kalimba/validations"
 
 module Kalimba
   # RDFS "Class"
@@ -17,7 +16,8 @@ module Kalimba
       super
       # TODO: make it possible to choose a backend
       # (e.g., Redland, RDF.rb, others)
-      base.send :include, Kalimba::Persistence::Redlander
+      # base.send :include, Kalimba::Persistence::Redlander
+      base.send :include, Kalimba::Persistence.backend
     end
 
     # Type URI of RDFS class

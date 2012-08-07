@@ -3,14 +3,18 @@ require "kalimba/persistence"
 
 module Kalimba
   module Persistence
+    def self.backend
+      Kalimba::Persistence::Redlander
+    end
+
+    def self.create_repository(options = {})
+      ::Redlander::Model.new(options)
+    end
+
     # Redlander-based persistence module
     module Redlander
       extend ActiveSupport::Concern
       include Kalimba::Persistence
-
-      def self.create_repository(options = {})
-        ::Redlander::Model.new(options)
-      end
 
       module ClassMethods
         def find_each(options = {})
