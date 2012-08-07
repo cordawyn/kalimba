@@ -4,11 +4,13 @@ module Kalimba
   module Persistence
     # Redlander-based persistence module
     module Redlander
-      module ClassMethods
-        def create_repository(options = {})
-          ::Redlander::Model.new(options)
-        end
+      extend ActiveSupport::Concern
 
+      def self.create_repository(options = {})
+        ::Redlander::Model.new(options)
+      end
+
+      module ClassMethods
         def find_each(options = {})
           attributes = (options[:conditions] || {}).stringify_keys
           q = "SELECT ?subject WHERE { #{resource_definition} . #{attributes_to_graph_query(attributes)} }"
@@ -179,10 +181,6 @@ module Kalimba
 
       def rdfs_class_by_datatype(datatype)
         self.class.rdfs_ancestors.detect {|a| a.type == datatype }
-      end
-
-      def self.included(base)
-        base.extend ClassMethods
       end
     end
   end

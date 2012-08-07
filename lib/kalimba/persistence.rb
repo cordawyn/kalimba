@@ -1,31 +1,21 @@
 require "securerandom"
 
-# TODO: make it possible to choose a backend
-# (e.g., Redland, RDF.rb, others)
-require "kalimba/persistence/redlander"
-
 module Kalimba
   # @abstract
   #   Backend implementations should override all methods
   #   that delegate processing to their parent class (invoking "super").
   module Persistence
-    # TODO: make it possible to choose a backend
-    # (e.g., Redland, RDF.rb, others)
-    include Kalimba::Persistence::Redlander
+    extend ActiveSupport::Concern
+
+    # Create an instance of the backend storage (repository)
+    #
+    # @param [Hash] options backend storage options
+    # @return [Any] instance of the backend storage
+    def self.create_repository(options = {})
+      super
+    end
 
     module ClassMethods
-      # TODO: make it possible to choose a backend
-      # (e.g., Redland, RDF.rb, others)
-      include Kalimba::Persistence::Redlander::ClassMethods
-
-      # Create an instance of the backend storage (repository)
-      #
-      # @param [Hash] options backend storage options
-      # @return [Any] instance of the backend storage
-      def create_repository(options = {})
-        super
-      end
-
       # Create a new instance of RDFS class
       #
       # @param [Hash<Symbol, String> => Any] attributes
@@ -146,10 +136,11 @@ module Kalimba
     def generate_subject
       super ||
         if self.class.base_uri
-          self.class.base_uri.fragment = SecureRandom.urlsafe_base64
-          self.class.base_uri
+          s = self.class.base_uri.dup
+          s.fragment = SecureRandom.urlsafe_base64
+          s
         else
-          raise Kalimba::KalimbaError, "Cannot generate subject without base URI for #{self.class}"
+          raise Kalimba::KalimbaError, "Cannot generate subject without a base URI"
         end
     end
   end

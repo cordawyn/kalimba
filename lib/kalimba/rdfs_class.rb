@@ -1,30 +1,28 @@
 require "kalimba/resource"
+require "kalimba/persistence"
+# TODO: make it possible to choose a backend
+# (e.g., Redland, RDF.rb, others)
+require "kalimba/persistence/redlander"
+# require "kalimba/validations"
 
 module Kalimba
-  module ResourceClassMethods
-    # RDFS types that this model inherits
-    #
-    # @return [Set<URI>]
-    def types
-      # TODO: handle type clashes!
-      rdfs_ancestors.inject(Set.new([type])) {|ts, parent| ts << parent.type }.delete(nil)
+  # RDFS "Class"
+  #
+  # @example
+  #   module Human
+  #     extend Kalimba::RDFSClass
+  #     type "http://schema.org/Human"
+  #   end
+  module RDFSClass
+    def self.extended(base)
+      super
+      # TODO: make it possible to choose a backend
+      # (e.g., Redland, RDF.rb, others)
+      base.send :include, Kalimba::Persistence::Redlander
+      # FIXME: currently it's outside-in: Persistence invokes Persistence::Redlander on "super"
+      # but it should be vice-versa, thus also allowing to "include Persistence" in "Persistence::Redlander" only
+      base.send :include, Kalimba::Persistence
     end
-
-    # Properties with their options
-    #
-    # @return [Hash{String => Hash}]
-    def properties
-      # TODO: handle property name clashes!
-      rdfs_ancestors.inject({}) { |ps, parent| parent == self ? ps : ps.merge(parent.properties) }.merge(@properties || {})
-    end
-
-    def rdfs_ancestors
-      ancestors.select { |a| a.respond_to?(:type) }
-    end
-  end
-
-  module RDFSClassMethods
-    include ResourceClassMethods
 
     # Type URI of RDFS class
     #
@@ -68,6 +66,26 @@ module Kalimba
       property name, params.merge(:collection => true)
     end
 
+    # RDFS types that this model inherits
+    #
+    # @return [Set<URI>]
+    def types
+      # TODO: handle type clashes!
+      rdfs_ancestors.inject(Set.new([type])) {|ts, parent| ts << parent.type }.delete(nil)
+    end
+
+    # Properties with their options
+    #
+    # @return [Hash{String => Hash}]
+    def properties
+      # TODO: handle property name clashes!
+      rdfs_ancestors.inject({}) { |ps, parent| parent == self ? ps : ps.merge(parent.properties) }.merge(@properties || {})
+    end
+
+    def rdfs_ancestors
+      ancestors.select { |a| a.respond_to?(:type) }
+    end
+
     # Create a new record with the given subject URI
     #
     # @note
@@ -92,13 +110,22 @@ module Kalimba
     def new(params = {})
       klass = Class.new(Resource)
       klass.class_eval <<-HERE
-        extend ResourceClassMethods
         include #{self}
+
         def self.type
-          @type ||= URI(\"#{type}\")
+          @type ||= URI(#{self}.type).freeze
         end
         def self.base_uri
-          @base_uri ||= URI(\"#{base_uri}\")
+          @base_uri ||= URI(#{self}.base_uri).freeze
+        end
+        def self.types
+          #{self}.types
+        end
+        def self.properties
+          #{self}.properties
+        end
+        def self.rdfs_ancestors
+          #{self}.rdfs_ancestors
         end
       HERE
       properties.each_key do |name|
@@ -107,24 +134,6 @@ module Kalimba
         klass.send :define_method, name, lambda { read_attribute name }
       end
       klass.new(params)
-    end
-  end
-
-  # Resource declaration module
-  #
-  # @example
-  #   module Human
-  #     extend Kalimba::RDFSResource
-  #     type "http://schema.org/Human"
-  #   end
-  module RDFSClass
-    extend RDFSClassMethods
-
-    private
-
-    def self.extended(base)
-      base.send :extend, RDFSClassMethods
-      base.send :extend, Persistence::ClassMethods
     end
   end
 end

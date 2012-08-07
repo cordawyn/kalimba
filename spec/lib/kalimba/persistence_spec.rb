@@ -210,9 +210,8 @@ describe Kalimba::Persistence do
   end
 
   describe "already persisted record" do
-    let(:person) { PersistenceTestPerson.new }
+    let(:person) { PersistenceTestPerson.create }
     subject { person }
-    before { person.save }
 
     it { should_not be_new_record }
     it { should be_persisted }
