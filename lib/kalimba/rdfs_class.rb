@@ -1,5 +1,4 @@
 require "kalimba/resource"
-require "kalimba/persistence"
 # TODO: make it possible to choose a backend
 # (e.g., Redland, RDF.rb, others)
 require "kalimba/persistence/redlander"
@@ -19,9 +18,6 @@ module Kalimba
       # TODO: make it possible to choose a backend
       # (e.g., Redland, RDF.rb, others)
       base.send :include, Kalimba::Persistence::Redlander
-      # FIXME: currently it's outside-in: Persistence invokes Persistence::Redlander on "super"
-      # but it should be vice-versa, thus also allowing to "include Persistence" in "Persistence::Redlander" only
-      base.send :include, Kalimba::Persistence
     end
 
     # Type URI of RDFS class

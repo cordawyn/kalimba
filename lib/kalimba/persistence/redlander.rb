@@ -1,10 +1,12 @@
 require "redlander"
+require "kalimba/persistence"
 
 module Kalimba
   module Persistence
     # Redlander-based persistence module
     module Redlander
       extend ActiveSupport::Concern
+      include Kalimba::Persistence
 
       def self.create_repository(options = {})
         ::Redlander::Model.new(options)
@@ -69,21 +71,24 @@ module Kalimba
 
       def reload
         self.class.properties.each { |name, _| attributes[name] = retrieve_attribute(name) }
+        self
       end
 
       def destroy
-        Kalimba.repository.statements.delete_all(:subject => subject)
+        if !destroyed? && persisted?
+          Kalimba.repository.statements.delete_all(:subject => subject)
+          super
+        else
+          false
+        end
       end
 
       def save(options = {})
-        store_attributes(options) && update_types_data
+        @subject ||= generate_subject
+        store_attributes(options) && update_types_data && super
       end
 
       private
-
-      def generate_subject
-        nil
-      end
 
       def store_attributes(options = {})
         if new_record?

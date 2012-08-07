@@ -12,7 +12,7 @@ module Kalimba
     # @param [Hash] options backend storage options
     # @return [Any] instance of the backend storage
     def self.create_repository(options = {})
-      super
+      raise NotImplementedError
     end
 
     module ClassMethods
@@ -21,7 +21,7 @@ module Kalimba
       # @param [Hash<Symbol, String> => Any] attributes
       # @return [Resource, nil]
       def create(attributes = {})
-        super
+        raise NotImplementedError
       end
 
       # Check whether instances of the RDFS class exist in the repository
@@ -29,14 +29,14 @@ module Kalimba
       # @param [Hash<[Symbol, String] => Any>] attributes
       # @return [Boolean]
       def exist?(attributes = {})
-        super
+        raise NotImplementedError
       end
 
       # Remove all instances of the RDFSClass from the repository
       #
       # @return [Boolean]
       def destroy_all
-        super
+        raise NotImplementedError
       end
 
       def find(scope, options = {})
@@ -51,7 +51,7 @@ module Kalimba
       end
 
       def find_each(options = {})
-        super
+        raise NotImplementedError
       end
     end
 
@@ -63,14 +63,14 @@ module Kalimba
     #
     # @return [Boolean]
     def new_record?
-      super
+      raise NotImplementedError
     end
 
     # Check whether the model has ever been persisted
     #
     # @return [Boolean]
     def persisted?
-      super
+      raise NotImplementedError
     end
 
     # Check whether the model has been destroyed
@@ -85,20 +85,15 @@ module Kalimba
     #
     # @return [self]
     def reload
-      super
-      self
+      raise NotImplementedError
     end
 
     # Remove the resource from the backend storage
     #
     # @return [Boolean]
     def destroy
-      if !destroyed? && persisted? && super
-        @destroyed = true
-        freeze
-      else
-        false
-      end
+      @destroyed = true
+      freeze
     end
 
     # Assign attributes from the given hash and persist the model
@@ -115,14 +110,9 @@ module Kalimba
     # @raise [KalimbaError] if fails to obtain the subject for a new record
     # @return [Boolean]
     def save(options = {})
-      @subject ||= generate_subject
-      if super
-        @previously_changed = changes
-        @changed_attributes.clear
-        true
-      else
-        false
-      end
+      @previously_changed = changes
+      @changed_attributes.clear
+      true
     end
 
     private
@@ -134,14 +124,13 @@ module Kalimba
     # @raise [Kalimba::KalimbaError] if cannot generate subject URI
     # @return [URI, nil]
     def generate_subject
-      super ||
-        if self.class.base_uri
-          s = self.class.base_uri.dup
-          s.fragment = SecureRandom.urlsafe_base64
-          s
-        else
-          raise Kalimba::KalimbaError, "Cannot generate subject without a base URI"
-        end
+      if self.class.base_uri
+        s = self.class.base_uri.dup
+        s.fragment = SecureRandom.urlsafe_base64
+        s
+      else
+        raise Kalimba::KalimbaError, "Cannot generate subject without a base URI"
+      end
     end
   end
 end
