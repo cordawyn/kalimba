@@ -1,7 +1,4 @@
 require "kalimba/resource"
-# TODO: make it possible to choose a backend
-# (e.g., Redland, RDF.rb, others)
-require "kalimba/persistence/redlander"
 
 module Kalimba
   # RDFS "Class"
@@ -105,7 +102,7 @@ module Kalimba
 
     def new(params = {})
       klass = Class.new(Resource)
-      klass.class_eval <<-HERE
+      klass.class_eval <<-HERE, __FILE__, __LINE__
         include #{self}
 
         def self.type

@@ -20,3 +20,6 @@ module Kalimba
     end
   end
 end
+
+# using Redlander backend (will be moved to a separate gem)
+require "kalimba/persistence/redlander"
