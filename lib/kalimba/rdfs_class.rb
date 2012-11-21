@@ -22,7 +22,7 @@ module Kalimba
     # @return [URI]
     def type(uri = nil)
       if uri
-        @type ||= uri.is_a?(URI) ? uri : URI(uri)
+        @type ||= URI(uri)
       else
         @type
       end
