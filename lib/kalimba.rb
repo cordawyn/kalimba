@@ -1,9 +1,13 @@
 require "set"
 require "active_model" # TODO: not all is required?
 
+# using Redlander backend (will be moved to a separate gem)
+require "kalimba/persistence/redlander"
+
 require "kalimba/version"
 require "kalimba/exceptions"
 require "kalimba/rdfs_class"
+require "kalimba/resource"
 
 module Kalimba
   class << self
@@ -20,6 +24,3 @@ module Kalimba
     end
   end
 end
-
-# using Redlander backend (will be moved to a separate gem)
-require "kalimba/persistence/redlander"

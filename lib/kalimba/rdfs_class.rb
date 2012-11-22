@@ -1,5 +1,3 @@
-require "kalimba/resource"
-
 module Kalimba
   # RDFS "Class"
   #
@@ -9,9 +7,17 @@ module Kalimba
   #     type "http://schema.org/Human"
   #   end
   module RDFSClass
-    def self.extended(base)
+    def included(klass)
       super
-      base.send :include, Kalimba::Persistence.backend
+      if klass.is_a?(Class)
+        properties.each do |name, _|
+          klass.class_eval do
+            define_attribute_method name
+            define_method "#{name}=", lambda { |value| write_attribute name, value }
+            define_method name, lambda { read_attribute name }
+          end
+        end
+      end
     end
 
     # Type URI of RDFS class
@@ -74,56 +80,6 @@ module Kalimba
 
     def rdfs_ancestors
       ancestors.select { |a| a.respond_to?(:type) }
-    end
-
-    # Create a new record with the given subject URI
-    #
-    # @note
-    #   In the world of RDF a resource cannot be instantly defined as "new",
-    #   because any arbitrary subject you define might be already present
-    #   in the storage (see: "Open World Assumption").
-    #   So you can supply an ID of an existing resource.
-    #   Don't forget to {#reload} it, if you need its actual attributes
-    #   instantiated as well.
-    #
-    # @note
-    #   The resource ID that you supply will be added as an URI
-    #   fragment to base_uri (or raise an error if base_uri is not defined).
-    #
-    # @param [String] rid ID to use for the resource
-    # @param [Hash<[Symbol, String] => Any>] params (see {RDFSResource#initialize})
-    # @return [Object] instance of the model
-    def for(rid, params = {})
-      new(params.merge(:_subject => rid))
-    end
-
-    def new(params = {})
-      klass = Class.new(Resource)
-      klass.class_eval <<-HERE, __FILE__, __LINE__
-        include #{self}
-
-        def self.type
-          @type ||= URI(#{self}.type).freeze
-        end
-        def self.base_uri
-          @base_uri ||= URI(#{self}.base_uri).freeze
-        end
-        def self.types
-          #{self}.types
-        end
-        def self.properties
-          #{self}.properties
-        end
-        def self.rdfs_ancestors
-          #{self}.rdfs_ancestors
-        end
-      HERE
-      properties.each_key do |name|
-        klass.send :define_attribute_method, name
-        klass.send :define_method, "#{name}=", lambda { |value| write_attribute name, value }
-        klass.send :define_method, name, lambda { read_attribute name }
-      end
-      klass.new(params)
     end
   end
 end

@@ -2,15 +2,13 @@ require "spec_helper"
 
 describe Kalimba::Persistence do
   before :all do
-    module PersistenceTestPerson
-      extend Kalimba::RDFSClass
+    class PersistenceTestPerson < Kalimba::Resource
       include Engineer
       type "http://schema.org/Person"
       base_uri "http://example.org/people"
     end
 
-    module PersistenceTestOilRig
-      extend Kalimba::RDFSClass
+    class PersistenceTestOilRig < Kalimba::Resource
       type "http://schema.org/OilRig"
       base_uri "http://example.org/oil_rigs"
     end
