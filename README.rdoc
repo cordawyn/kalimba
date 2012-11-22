@@ -55,8 +55,7 @@ Basically, the steps of designing your Kalimba models are as follows:
     end
 
     # your model must be inherited from Kalimba::Resource
-    # AND must include at least one of RDFS modules
-    # (note that your model may include *multiple* RDFS modules)
+    # and may include previously defined RDFS modules
     class Person < Kalimba::Resource
       # include your RDFS modules into the model
       include RDFS::Human
