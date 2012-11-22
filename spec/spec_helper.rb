@@ -1,5 +1,10 @@
 require "kalimba"
 
+support_dir = File.join(File.dirname(__FILE__), "support")
+Dir.foreach(support_dir) do |ext|
+  require File.join(support_dir, ext) if ext.end_with?(".rb")
+end
+
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true
