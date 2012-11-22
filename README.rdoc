@@ -83,7 +83,15 @@ RDFS modules, it will not be able to "find its place" in the RDF storage and thu
 perform any operations requiring RDF storage "environment" (which are pretty much
 all operations).
 
-For details refer to YARD documentation for Kalimba::RDFSClass module.
+In other words, there are 2 ways of creating Kalimba resources (or models, if you prefer),
+as we differentiate between 2 types of resources: those that can have instances
+(or Individuals, in OWL-speak) and those that cannot (consider them to be abstractions
+that cannot have instances in the real world, used to build classifications and define
+general behaviours).
+Abstract resources are Ruby modules extended with `Kalimba::RDFSClass`,
+instantiable resources are subclasses of `Kalimba::Resource`.
+
+For other details refer to YARD documentation for Kalimba::RDFSClass module.
 
 == Contributing
 
