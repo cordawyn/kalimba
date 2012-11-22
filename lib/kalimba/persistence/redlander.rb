@@ -37,7 +37,8 @@ module Kalimba
 
         def create(attributes = {})
           record = new(attributes)
-          record.save ? record : nil
+          record.save
+          record
         end
 
         def destroy_all
