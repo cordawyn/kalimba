@@ -23,6 +23,7 @@ describe Kalimba::Resource do
       it { should be_a Enumerable }
       it { should include URI("http://schema.org/Human") }
       it { should include URI("http://schema.org/Engineer") }
+      it { should include URI("http://schema.org/Person") }
     end
 
     describe "properties" do
