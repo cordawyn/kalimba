@@ -1,3 +1,4 @@
+require "kalimba/persistence" # fallback to abstract backend
 require "kalimba/validations"
 require "kalimba/callbacks"
 
