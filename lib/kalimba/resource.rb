@@ -1,4 +1,5 @@
 require "kalimba/validations"
+require "kalimba/callbacks"
 
 module Kalimba
   class Resource
@@ -110,5 +111,6 @@ module Kalimba
     end
 
     include Kalimba::Validations
+    include Kalimba::Callbacks
   end
 end
