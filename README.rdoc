@@ -33,9 +33,6 @@ Basically, the steps of designing your Kalimba models are as follows:
       # define the type URI of the module
       type "http://schema.org/Human"
 
-      # define base URI for the instances of this RDFS class
-      base_uri "http://example.org/humans"
-
       # declare single properties with "property"
       property :name, :predicate => NS::FOAF["name"], :datatype => NS:XMLSchema["string"]
     end
@@ -46,9 +43,6 @@ Basically, the steps of designing your Kalimba models are as follows:
 
       # define the type URI of the module
       type "http://schema.org/Engineer"
-
-      # define base URI for the instances of this RDFS class
-      base_uri "http://example.org/engineers"
 
       # declare multiple properies of the same type with "has_many"
       has_many :duties, :predicate => NS::Work["duty"], :datatype => NS:XMLSchema["string"]
@@ -62,6 +56,8 @@ Basically, the steps of designing your Kalimba models are as follows:
       include RDFS::Engineer
 
       type "http://schema.org/Person"
+
+      # define base URI for the instances of this resource
       base_uri "http://example.org/people"
     end
 
@@ -91,6 +87,38 @@ Abstract resources are Ruby modules extended with `Kalimba::RDFSClass`,
 instantiable resources are subclasses of `Kalimba::Resource`.
 
 For other details refer to YARD documentation for Kalimba::RDFSClass module.
+
+== Validations
+
+For details, refer to ActionModel::Validations documentation.
+
+    class Human < Kalimba::Resource
+      base_uri "http://example.com/people/"
+      property :name, :predicate => NS::FOAF["name"], :datatype => NS:XMLSchema["string"]
+
+      validates_presence_of :name
+    end
+
+    $ bob = Human.create  # => bob will have an error on :name
+
+== Callbacks
+
+Kalimba supports :before, :after and :around callbacks for :save, :create, :update and
+:destroy actions.
+
+    class Human < Kalimba::Resource
+      base_uri "http://example.com/people/"
+
+      before_save :shout
+
+      private
+
+      def shout
+        puts "Hey!"
+      end
+    end
+
+For details, refer to ActionModel::Callbacks documentation.
 
 == Contributing
 
