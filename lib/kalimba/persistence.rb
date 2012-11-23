@@ -1,4 +1,5 @@
 require "securerandom"
+require "active_support/concern"
 
 module Kalimba
   # @abstract

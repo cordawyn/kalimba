@@ -1,5 +1,6 @@
-module Kalimba
+require "active_support/concern"
 
+module Kalimba
   # Raised by <tt>save!</tt> and <tt>create!</tt> when the record is invalid. Use the
   # +record+ method to retrieve the record which did not validate.
   #
