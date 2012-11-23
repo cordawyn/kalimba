@@ -7,19 +7,6 @@ module Kalimba
   #     type "http://schema.org/Human"
   #   end
   module RDFSClass
-    def included(klass)
-      super
-      if klass.is_a?(Class)
-        properties.each do |name, _|
-          klass.class_eval do
-            define_attribute_method name
-            define_method "#{name}=", lambda { |value| write_attribute name, value }
-            define_method name, lambda { read_attribute name }
-          end
-        end
-      end
-    end
-
     # Type URI of RDFS class
     #
     # @note Can be set only once
@@ -80,6 +67,21 @@ module Kalimba
 
     def rdfs_ancestors
       ancestors.select { |a| a.respond_to?(:type) }
+    end
+
+    private
+
+    def included(klass)
+      super
+      if klass.is_a?(Class)
+        properties.each do |name, _|
+          klass.class_eval do
+            define_attribute_method name
+            define_method "#{name}=", lambda { |value| write_attribute name, value }
+            define_method name, lambda { read_attribute name }
+          end
+        end
+      end
     end
   end
 end
