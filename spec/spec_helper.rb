@@ -1,4 +1,5 @@
 require "kalimba"
+require "kalimba-redlander"
 
 support_dir = File.join(File.dirname(__FILE__), "support")
 Dir.foreach(support_dir) do |ext|
