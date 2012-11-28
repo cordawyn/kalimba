@@ -38,8 +38,23 @@ module Kalimba
     # @return [void]
     def property(name, params = {})
       params[:predicate] = URI(params[:predicate])
-      params[:datatype] = URI(params[:datatype])
+      if params[:datatype].is_a?(Symbol)
+        params[:datatype] = const_get(params[:datatype]).type
+      else
+        params[:datatype] = URI(params[:datatype])
+      end
       (@properties ||= {})[name.to_s] = params
+
+      define_attribute_method name if self.is_a?(Class)
+
+      class_eval <<-HERE, __FILE__, __LINE__
+        def #{name}=(value)
+          write_attribute "#{name}", value
+        end
+        def #{name}
+          read_attribute "#{name}"
+        end
+      HERE
     end
 
     # Collection definition
@@ -73,15 +88,7 @@ module Kalimba
 
     def included(klass)
       super
-      if klass.is_a?(Class)
-        properties.each do |name, _|
-          klass.class_eval do
-            define_attribute_method name
-            define_method "#{name}=", lambda { |value| write_attribute name, value }
-            define_method name, lambda { read_attribute name }
-          end
-        end
-      end
+      properties.each { |name, _| klass.define_attribute_method name } if klass.is_a?(Class)
     end
   end
 end
