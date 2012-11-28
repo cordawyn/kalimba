@@ -88,7 +88,7 @@ module Kalimba
 
     def included(klass)
       super
-      properties.each { |name, _| klass.define_attribute_method name } if klass.is_a?(Class)
+      klass.define_attribute_methods properties.keys if klass.is_a?(Class)
     end
   end
 end
