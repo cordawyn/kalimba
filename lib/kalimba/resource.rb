@@ -111,7 +111,7 @@ module Kalimba
       attributes[name] = value
     end
 
-    include Kalimba::Validations
     include Kalimba::Callbacks
+    include Kalimba::Validations
   end
 end
