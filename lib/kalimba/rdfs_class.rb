@@ -51,9 +51,6 @@ module Kalimba
         def #{name}=(value)
           write_attribute "#{name}", value
         end
-        def #{name}
-          read_attribute "#{name}"
-        end
       HERE
     end
 
