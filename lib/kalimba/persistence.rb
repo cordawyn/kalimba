@@ -52,7 +52,7 @@ module Kalimba
         when :first
           find_each(options).first
         when :all
-          find_each(options)
+          find_each(options).to_a
         else
           find(:first, :conditions => {:id => scope})
         end
@@ -60,6 +60,14 @@ module Kalimba
 
       def find_each(options = {})
         raise NotImplementedError
+      end
+
+      def first(options = {})
+        find(:first, options)
+      end
+
+      def all(options = {})
+        find(:all, options)
       end
     end
 
