@@ -50,7 +50,7 @@ module Kalimba
       def find(scope, options = {})
         case scope
         when :first
-          find_each(options).first
+          find_each(options.merge(:limit => 1)).first
         when :all
           find_each(options).to_a
         else
