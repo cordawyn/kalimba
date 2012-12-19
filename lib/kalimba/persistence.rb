@@ -69,6 +69,10 @@ module Kalimba
       def all(options = {})
         find(:all, options)
       end
+
+      def count(attributes = {})
+        raise NotImplementedError
+      end
     end
 
     def id

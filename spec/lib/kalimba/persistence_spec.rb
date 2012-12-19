@@ -14,6 +14,16 @@ describe Kalimba::Persistence do
     end
   end
 
+  describe "count" do
+    subject { PersistenceTestPerson.count }
+
+    before do
+      3.times { PersistenceTestPerson.create }
+    end
+
+    it { should eql 3 }
+  end
+
   describe "find" do
     let(:options) { {:conditions => {:rank => 4}} }
 
