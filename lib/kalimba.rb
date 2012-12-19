@@ -9,10 +9,10 @@ require "kalimba/resource"
 module Kalimba
   class << self
     def repository
-      @repository ||= Persistence.create_repository(@repository_options || {})
+      @repository ||= Persistence.repository(@repository_options || {})
     end
 
-    # Set ID of the repository used by this RDFS class
+    # Set repository options
     #
     # @param [Hash] options options to be passed to the repository constructor
     # @return [void]
@@ -21,3 +21,5 @@ module Kalimba
     end
   end
 end
+
+require "kalimba/railtie" if defined?(Rails)

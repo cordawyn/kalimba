@@ -8,19 +8,21 @@ module Kalimba
   module Persistence
     extend ActiveSupport::Concern
 
-    # Create an instance of the backend storage (repository)
-    #
-    # @param [Hash] options backend storage options
-    # @return [Any] instance of the backend storage
-    def self.create_repository(options = {})
-      raise NotImplementedError
-    end
+    class << self
+      # Create an instance of the backend storage (repository)
+      #
+      # @param [Hash] options backend storage options
+      # @return [Any] instance of the backend storage
+      def repository(options = {})
+        raise NotImplementedError
+      end
 
-    # Module of the persistence backend
-    #
-    # @return [Module]
-    def self.backend
-      self
+      # Module of the persistence backend
+      #
+      # @return [Module]
+      def backend
+        self
+      end
     end
 
     module ClassMethods
