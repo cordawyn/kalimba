@@ -153,7 +153,10 @@ describe Kalimba::Persistence do
 
         it "should not persist non-castable values" do
           person.retired = true
-          expect(person.save).to be_false
+          expect(person.save).to be_true
+
+          person.reload
+          expect(person.retired).to be_nil
         end
       end
 
