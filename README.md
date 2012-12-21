@@ -1,11 +1,11 @@
-= Kalimba
+# Kalimba
 
 Kalimba is an opinionated clone of ActiveRecord, based on ActiveModel framework.
 Combined with the raw power of Redlander gem, it introduces the world of Ruby on Rails
 to the world of RDF, triple storages, LinkedData and Semantic Web.
 The resources of semantic graph storages become accessible in a customary form of "models".
 
-== Installation
+## Installation
 
 Add this line to your application's Gemfile:
 
@@ -19,13 +19,14 @@ Or install it yourself as:
 
     $ gem install kalimba
 
-NOTE: You won't be able to do much without a backend to handle your RDF statements.
-Please add "kalimba-redlander" gem dependency to your Gemfile, and make sure
-to "require 'kalimba-redlander'" before invoking "require 'kalimba'".
-[Kalimba-redlander](https://github.com/cordawyn/kalimba-redlander) backend gem
-is developed independently and so should be other backends.
+> **NOTE**:<br/>
+> You won't be able to do much without a backend to handle your RDF statements.
+> Please add "kalimba-redlander" gem dependency to your Gemfile, and make sure
+> to "require 'kalimba-redlander'" before invoking "require 'kalimba'".
+> [Kalimba-redlander](https://github.com/cordawyn/kalimba-redlander) backend gem
+> is developed independently and so should be other backends.
 
-== Usage
+## Usage
 
 Kalimba is opinionated in that it forces a certain application design pattern.
 Basically, the steps of designing your Kalimba models are as follows:
@@ -67,8 +68,9 @@ Basically, the steps of designing your Kalimba models are as follows:
       base_uri "http://example.org/people"
     end
 
-Note: "RDFS" prefix is optional, but you're advised to place your RDFS modules
-within a dedicated namespace, to be able to tell them from the common Ruby modules.
+> **NOTE**:<br/>
+> "RDFS" prefix is optional, but you're advised to place your RDFS modules
+> within a dedicated namespace, to be able to tell them from the common Ruby modules.
 
 2) from this point on, you may treat your model just like
 any fully-fledged clone of ActiveModel (i.e. ActiveRecord model)
@@ -80,9 +82,9 @@ any fully-fledged clone of ActiveModel (i.e. ActiveRecord model)
 
 In short, inheriting from Kalimba::Resource facilitates ActiveRecord-like behaviour,
 and including RDFS modules enables RDF features. If your model does not include any
-RDFS modules, it will not be able to "find its place" in the RDF storage and thus,
-perform any operations requiring RDF storage "environment" (which are pretty much
-all operations).
+RDFS modules (or does not define "type" and "base_uri" by itself), it will not be
+able to "find its place" in the RDF storage and thus, perform any operations
+requiring RDF storage "environment" (which are pretty much all operations).
 
 In other words, there are 2 ways of creating Kalimba resources (or models, if you prefer),
 as we differentiate between 2 types of resources: those that can have instances
@@ -94,7 +96,7 @@ instantiable resources are subclasses of `Kalimba::Resource`.
 
 For other details refer to YARD documentation for Kalimba::RDFSClass module.
 
-== Validations
+## Validations
 
 For details, refer to ActionModel::Validations documentation.
 
@@ -107,7 +109,7 @@ For details, refer to ActionModel::Validations documentation.
 
     $ bob = Human.create  # => bob will have an error on :name
 
-== Callbacks
+## Callbacks
 
 Kalimba supports :before, :after and :around callbacks for :save, :create, :update and
 :destroy actions.
@@ -126,7 +128,7 @@ Kalimba supports :before, :after and :around callbacks for :save, :create, :upda
 
 For details, refer to ActionModel::Callbacks documentation.
 
-== Contributing
+## Contributing
 
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
