@@ -97,21 +97,6 @@ module Kalimba
 
     private
 
-    def read_attribute(name, *args)
-      value = attributes[name]
-      if value
-        value
-      else
-        self.class.properties[name][:collection] ? [] : nil
-      end
-    end
-    alias_method :attribute, :read_attribute
-
-    def write_attribute(name, value)
-      attribute_will_change!(name) unless value == attributes[name]
-      attributes[name] = value
-    end
-
     include Kalimba::Callbacks
     include Kalimba::Validations
   end

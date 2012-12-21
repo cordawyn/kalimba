@@ -210,11 +210,17 @@ describe Kalimba::Persistence do
         before { person.update_attributes(:rank => 7, :duties => %w(idling procrastinating)) }
 
         it "should assign attributes the values from the storage" do
-          expect { subject.reload }.to change(subject, :rank).from(nil).to(person.rank)
+          expect { subject.reload }.to change { subject.attributes["rank"] }.from(nil).to(7)
         end
 
         it "should assign attributes the collections from the storage" do
-          expect { subject.reload }.to change(subject, :duties).from([]).to(person.duties)
+          expect { subject.reload }.to change { subject.attributes["duties"] }.from([]).to(%w(idling procrastinating))
+        end
+
+        context "when accessing an attribute" do
+          it "should retrieve it from the storage" do
+            expect { subject.rank }.to change { subject.attributes["rank"] }.from(nil).to(7)
+          end
         end
       end
     end
