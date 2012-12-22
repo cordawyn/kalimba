@@ -1,3 +1,5 @@
+require "kalimba/reflection"
+
 module Kalimba
   # RDFS "Class"
   #
@@ -7,6 +9,8 @@ module Kalimba
   #     type "http://schema.org/Human"
   #   end
   module RDFSClass
+    include Kalimba::Reflection
+
     # Type URI of RDFS class
     #
     # @note Can be set only once
@@ -58,7 +62,19 @@ module Kalimba
     #
     # @param (see #property)
     def has_many(name, params = {})
+      create_reflection(name, params)
       property name, params.merge(:collection => true)
+
+      class_eval <<-HERE, __FILE__, __LINE__
+        def #{name.to_s.singularize}_ids
+          #{name}.map(&:id)
+        end
+
+        def #{name.to_s.singularize}_ids=(ids)
+          klass = self.class.reflect_on_association(:#{name}).klass
+          #{name} = ids.map {|i| klass.for(i) }
+        end
+      HERE
     end
 
     # RDFS types that this model inherits
@@ -86,6 +102,7 @@ module Kalimba
     def included(klass)
       super
       klass.define_attribute_methods properties.keys if klass.is_a?(Class)
+      klass.reflections.merge! reflections
     end
   end
 end
