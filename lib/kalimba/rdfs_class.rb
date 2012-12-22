@@ -67,12 +67,12 @@ module Kalimba
 
       class_eval <<-HERE, __FILE__, __LINE__
         def #{name.to_s.singularize}_ids
-          #{name}.map(&:id)
+          self.#{name}.map(&:id)
         end
 
         def #{name.to_s.singularize}_ids=(ids)
           klass = self.class.reflect_on_association(:#{name}).klass
-          #{name} = ids.map {|i| klass.for(i) }
+          self.#{name} = ids.map {|i| klass.for(i) }
         end
       HERE
     end
