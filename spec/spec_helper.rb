@@ -1,4 +1,4 @@
-require "kalimba-redlander"
+require "kalimba/persistence/redlander"
 require "kalimba"
 
 support_dir = File.join(File.dirname(__FILE__), "support")
