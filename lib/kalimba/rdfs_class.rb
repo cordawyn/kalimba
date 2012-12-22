@@ -9,6 +9,11 @@ module Kalimba
   #     type "http://schema.org/Human"
   #   end
   module RDFSClass
+    class << self
+      attr_accessor :subclasses
+    end
+    self.subclasses = Set.new([])
+
     include Kalimba::Reflection
 
     # Type URI of RDFS class
@@ -98,6 +103,11 @@ module Kalimba
     end
 
     private
+
+    def self.extended(klass)
+      super
+      subclasses << klass
+    end
 
     def included(klass)
       super

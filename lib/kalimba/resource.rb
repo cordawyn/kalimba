@@ -16,6 +16,11 @@ module Kalimba
     attr_accessor :attributes
 
     class << self
+      def inherited(klass)
+        super
+        Kalimba::RDFSClass.subclasses << klass
+      end
+
       # Create a new record with the given subject URI
       #
       # @note
