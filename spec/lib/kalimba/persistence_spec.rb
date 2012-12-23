@@ -4,13 +4,59 @@ describe Kalimba::Persistence do
   before :all do
     class PersistenceTestPerson < Kalimba::Resource
       include Engineer
-      type "http://schema.org/Person"
+      type "http://schema.org/PersistenceTestPerson"
       base_uri "http://example.org/people"
     end
 
     class PersistenceTestOilRig < Kalimba::Resource
       type "http://schema.org/OilRig"
       base_uri "http://example.org/oil_rigs"
+
+      property :operator, :predicate => "http://example.org/operator", :datatype => :PersistenceTestPerson
+      has_many :saboteurs, :predicate => "http://example.org/saboteur", :datatype => "http://schema.org/Saboteur"
+    end
+  end
+
+  describe "associations" do
+    before { PersistenceTestOilRig.create }
+    let(:rig) { PersistenceTestOilRig.first }
+
+    describe "instantiation" do
+      context "of existing Kalimba resources" do
+        before do
+          Kalimba.repository.statements.create(:subject => rig.subject,
+                                               :predicate => PersistenceTestOilRig.properties["operator"][:predicate],
+                                               :object => PersistenceTestPerson.create.subject)
+        end
+
+        subject { rig.operator }
+
+        it { should be_an_instance_of(PersistenceTestPerson) }
+      end
+
+      context "of unknown Kalimba resources" do
+        before do
+          Kalimba.repository.statements.create(:subject => rig.subject,
+                                               :predicate => PersistenceTestOilRig.properties["saboteurs"][:predicate],
+                                               :object => URI("http://schema.org/Saboteur#Karen_Knight"))
+        end
+
+        subject { rig.saboteurs }
+
+        it { should be_a(Enumerable) }
+
+        it "should yield anonymous class instances" do
+          expect(subject.first.class).to be_anonymous
+        end
+
+        it "should set class type to the declared datatype" do
+          expect(subject.first.class.type).to eql PersistenceTestOilRig.properties["saboteurs"][:datatype]
+        end
+
+        it "should set class base_uri to the URI of the instance (without the fragment)" do
+          expect(subject.first.class.base_uri).to eql URI("http://schema.org/Saboteur/")
+        end
+      end
     end
   end
 

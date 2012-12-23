@@ -5,7 +5,7 @@ describe Kalimba::Resource do
     class ResourceTestPerson < Kalimba::Resource
       include Human
       include Engineer
-      type "http://schema.org/Person"
+      type "http://schema.org/ResourceTestPerson"
       base_uri "http://example.org/people"
     end
   end
@@ -23,7 +23,7 @@ describe Kalimba::Resource do
       it { should be_a Enumerable }
       it { should include URI("http://schema.org/Human") }
       it { should include URI("http://schema.org/Engineer") }
-      it { should include URI("http://schema.org/Person") }
+      it { should include URI("http://schema.org/ResourceTestPerson") }
     end
 
     describe "properties" do
