@@ -77,7 +77,7 @@ module Kalimba
 
         def #{name.to_s.singularize}_ids=(ids)
           klass = self.class.reflect_on_association(:#{name}).klass
-          self.#{name} = ids.map {|i| klass.for(i) }
+          self.#{name} = ids.reject(&:blank?).map {|i| klass.for(i) }
         end
       HERE
     end
