@@ -49,6 +49,11 @@ describe Kalimba::Persistence do
           expect(subject.first.class).to be_anonymous
         end
 
+        it "should add the anonymous class to RDFSClass repository" do
+          subject
+          expect(Kalimba::RDFSClass.subclasses).to include(subject.first.class)
+        end
+
         it "should set class type to the declared datatype" do
           expect(subject.first.class.type).to eql PersistenceTestOilRig.properties["saboteurs"][:datatype]
         end
