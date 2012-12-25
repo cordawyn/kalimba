@@ -39,6 +39,9 @@ describe Kalimba::Persistence do
           Kalimba.repository.statements.create(:subject => rig.subject,
                                                :predicate => PersistenceTestOilRig.properties["saboteurs"][:predicate],
                                                :object => URI("http://schema.org/Saboteur#Karen_Knight"))
+          Kalimba.repository.statements.create(:subject => rig.subject,
+                                               :predicate => PersistenceTestOilRig.properties["saboteurs"][:predicate],
+                                               :object => URI("http://schema.org/Saboteur#Lee_Knight"))
         end
 
         subject { rig.saboteurs }
@@ -52,6 +55,10 @@ describe Kalimba::Persistence do
         it "should add the anonymous class to RDFSClass repository" do
           subject
           expect(Kalimba::RDFSClass.subclasses).to include(subject.first.class)
+        end
+
+        it "should not create more than one anonymous class for homogenious objects" do
+          expect(subject.first.class).to eql subject.last.class
         end
 
         it "should set class type to the declared datatype" do
