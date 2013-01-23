@@ -23,6 +23,10 @@ module Kalimba
       def backend
         self
       end
+
+      def logger
+        @logger ||= defined?(::Rails) && ::Rails.logger
+      end
     end
 
     module ClassMethods
@@ -74,6 +78,10 @@ module Kalimba
 
       def count(attributes = {})
         raise NotImplementedError
+      end
+
+      def logger
+        Kalimba::Persistence.logger
       end
     end
 
@@ -129,12 +137,16 @@ module Kalimba
 
     # Persist the model into the backend storage
     #
-    # @raise [KalimbaError] if fails to obtain the subject for a new record
+    # @raise [Kalimba::KalimbaError] if fails to obtain the subject for a new record
     # @return [Boolean]
     def save(options = {})
       @previously_changed = changes
       @changed_attributes.clear
       true
+    end
+
+    def logger
+      self.class.logger
     end
 
     private
