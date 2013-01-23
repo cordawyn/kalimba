@@ -198,6 +198,16 @@ describe Kalimba::Persistence do
         person.should_not be_changed
         person.should be_persisted
       end
+
+      context "when failed halfway" do
+        # TODO: need a more "natural" method of causing an error on save
+        before { person.stub(update_types_data: false) }
+
+        it "should not leave remains in the repository" do
+          person.save
+          Kalimba.repository.statements.exist?(subject: person.subject).should be_false
+        end
+      end
     end
 
     context "with changes" do
