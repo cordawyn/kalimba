@@ -48,7 +48,17 @@ module Kalimba
     def property(name, params = {})
       params[:predicate] = URI(params[:predicate])
       if params[:datatype].is_a?(Symbol)
-        params[:datatype] = const_get(params[:datatype]).type
+        association_class = const_get(params[:datatype])
+        params[:datatype] = association_class.type
+        class_eval <<-HERE, __FILE__, __LINE__
+          def #{name}_id
+            self.#{name}.try(:id)
+          end
+
+          def #{name}_id=(value)
+            self.#{name} = value.blank? ? nil : #{association_class}.for(value)
+          end
+        HERE
       else
         params[:datatype] = URI(params[:datatype])
       end
