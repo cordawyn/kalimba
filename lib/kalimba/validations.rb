@@ -28,11 +28,11 @@ module Kalimba
     module ClassMethods
       # Creates an object just like Persistence.create but calls <tt>save!</tt> instead of +save+
       # so an exception is raised if the record is invalid.
-      def create!(attributes = {}, options = {}, &block)
+      def create!(attributes = {}, &block)
         if attributes.is_a?(Array)
-          attributes.each { |attr| create!(attr, options, &block) }
+          attributes.each { |attr| create!(attr, &block) }
         else
-          super || (raise RecordInvalid, self)
+          create(attributes, &block) || (raise RecordInvalid, self)
         end
       end
     end
