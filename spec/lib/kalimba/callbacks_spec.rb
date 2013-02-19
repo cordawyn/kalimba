@@ -2,11 +2,10 @@ require "spec_helper"
 
 describe "callbacks" do
   before :all do
-    class CallbacksTestPerson < Kalimba::Resource
+    class CallbacksTestPerson < Human
       attr_accessor :triggers
 
-      include Human
-
+      type "http://schema.org/CallbacksTestPerson"
       base_uri "http://example.com/people/"
 
       before_create  :trigger_1

@@ -2,9 +2,7 @@ require "spec_helper"
 
 describe Kalimba::Resource do
   before :all do
-    class ResourceTestPerson < Kalimba::Resource
-      include Human
-      include Engineer
+    class ResourceTestPerson < Human
       type "http://schema.org/ResourceTestPerson"
       base_uri "http://example.org/people"
     end
@@ -14,24 +12,14 @@ describe Kalimba::Resource do
     subject { ResourceTestPerson }
 
     it { should respond_to :type }
-    it { should respond_to :types }
     it { should respond_to :properties }
-
-    describe "types" do
-      subject { ResourceTestPerson.types }
-
-      it { should be_a Enumerable }
-      it { should include URI("http://schema.org/Human") }
-      it { should include URI("http://schema.org/Engineer") }
-      it { should include URI("http://schema.org/ResourceTestPerson") }
-    end
 
     describe "properties" do
       subject { ResourceTestPerson.properties }
 
       it { should be_a Hash }
 
-      %w(name rank duties retired).each do |name|
+      %w(name duties).each do |name|
         it { should include name }
       end
     end
@@ -42,12 +30,8 @@ describe Kalimba::Resource do
 
       it { should respond_to :name }
       it { should respond_to :name= }
-      it { should respond_to :rank }
-      it { should respond_to :rank= }
       it { should respond_to :duties }
       it { should respond_to :duties= }
-      it { should respond_to :retired }
-      it { should respond_to :retired= }
 
       it { should respond_to :to_model }
       it { should respond_to :to_key }
@@ -90,7 +74,7 @@ describe Kalimba::Resource do
 
         it { should be_a Hash }
 
-        %w(name rank duties retired).each do |name|
+        %w(name duties).each do |name|
           it { should include name }
         end
 
@@ -108,13 +92,11 @@ describe Kalimba::Resource do
         end
 
         context "when assigned via assign_attributes" do
-          before { person.assign_attributes(:rank => 3, :name => "Alice") }
+          before { person.assign_attributes(:duties => %w(eat sleep drink), :name => "Alice") }
 
           it "should have accessors return the assigned values" do
             expect(person.name).to eql "Alice"
-            expect(person.rank).to eql 3
-            expect(person.duties).to eql []
-            expect(person.retired).to be_nil
+            expect(person.duties).to eql %w(eat sleep drink)
           end
         end
 
@@ -123,9 +105,7 @@ describe Kalimba::Resource do
 
           it "should have accessors return the assigned values" do
             expect(person.name).to eql "Bob"
-            expect(person.rank).to be_nil
             expect(person.duties).to eql %w(running)
-            expect(person.retired).to be_nil
           end
         end
       end

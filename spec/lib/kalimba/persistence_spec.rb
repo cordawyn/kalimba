@@ -2,8 +2,7 @@ require "spec_helper"
 
 describe Kalimba::Persistence do
   before :all do
-    class PersistenceTestPerson < Kalimba::Resource
-      include Engineer
+    class PersistenceTestPerson < Engineer
       type "http://schema.org/PersistenceTestPerson"
       base_uri "http://example.org/people"
     end
@@ -54,7 +53,7 @@ describe Kalimba::Persistence do
 
         it "should add the anonymous class to RDFSClass repository" do
           subject
-          expect(Kalimba::RDFSClass.subclasses).to include(subject.first.class)
+          expect(Kalimba::Resource.descendants).to include(subject.first.class)
         end
 
         it "should not create more than one anonymous class for homogenious objects" do
@@ -139,7 +138,9 @@ describe Kalimba::Persistence do
   end
 
   describe "destroy_all" do
-    before { PersistenceTestPerson.create }
+    before do
+      2.times { PersistenceTestPerson.create }
+    end
 
     it "should destroy all instances of the given RDFS class" do
       expect { PersistenceTestPerson.destroy_all }.to change(Kalimba.repository, :size).by(-2)
@@ -201,7 +202,7 @@ describe Kalimba::Persistence do
 
       context "when failed halfway" do
         # TODO: need a more "natural" method of causing an error on save
-        before { person.stub(update_types_data: false) }
+        before { person.stub(store_type: false) }
 
         it "should not leave remains in the repository" do
           person.save
@@ -234,8 +235,8 @@ describe Kalimba::Persistence do
         context "when saved" do
           before { subject.save }
 
-          it "should be added statements with changed attributes" do
-            expect(Kalimba.repository.size).to eql (person.class.types.size + 1)
+          it "should be added statements with changed attributes (type + rank)" do
+            expect(Kalimba.repository.size).to eql 2
           end
         end
       end
@@ -264,8 +265,8 @@ describe Kalimba::Persistence do
         context "when saved" do
           before { person.save }
 
-          it "should be added statements with changed attributes" do
-            expect(Kalimba.repository.size).to eql (person.class.types.size + 2)
+          it "should be added statements with changed attributes (type + duties*2)" do
+            expect(Kalimba.repository.size).to eql 3
           end
         end
       end
@@ -311,7 +312,8 @@ describe Kalimba::Persistence do
       before { @another = PersistenceTestPerson.create }
 
       it "should remove the record from the storage" do
-        expect { subject.destroy }.to change(Kalimba.repository, :size).by(-person.class.types.size)
+        subject # create subject
+        expect { subject.destroy }.to change(Kalimba.repository, :size).by(-1)
         subject.should_not be_new_record
         subject.should_not be_persisted
         subject.should be_destroyed

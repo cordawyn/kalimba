@@ -19,15 +19,14 @@ RSpec.configure do |config|
   config.order = 'random'
 
   config.before :all do
-    module Human
-      extend Kalimba::RDFSClass
+    class Human < Kalimba::Resource
       type "http://schema.org/Human"
       base_uri "http://example.org/people"
       property :name, :predicate => "http://xmlns.com/foaf/0.1#name", :datatype => NS::XMLSchema["string"]
+      has_many :duties, :predicate => "http://works.com#duty", :datatype => NS::XMLSchema["string"]
     end
 
-    module Engineer
-      extend Kalimba::RDFSClass
+    class Engineer < Kalimba::Resource
       type "http://schema.org/Engineer"
       base_uri "http://example.org/people"
       property :rank, :predicate => "http://works.com#rank", :datatype => NS::XMLSchema["integer"]

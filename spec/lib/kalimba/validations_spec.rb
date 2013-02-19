@@ -2,9 +2,7 @@ require "spec_helper"
 
 describe "validations" do
   before :all do
-    class ValidationsTestPerson < Kalimba::Resource
-      include Human
-
+    class ValidationsTestPerson < Human
       validates_presence_of :name
     end
   end

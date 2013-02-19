@@ -1,26 +1,30 @@
+require "active_support/core_ext/class/attribute"
+require "active_support/core_ext/class/subclasses"
 require "kalimba/persistence" # fallback to abstract backend
 require "kalimba/validations"
 require "kalimba/callbacks"
+require "kalimba/reflection"
 
 module Kalimba
   class Resource
-    extend Kalimba::RDFSClass
-
     include ActiveModel::AttributeMethods
     include ActiveModel::Dirty
     include ActiveModel::Conversion
+
+    extend Kalimba::Reflection
 
     include Kalimba::Persistence.backend
 
     attr_reader :subject
     attr_accessor :attributes
 
-    class << self
-      def inherited(klass)
-        super
-        Kalimba::RDFSClass.subclasses << klass
-      end
+    # Properties with their options
+    #
+    # @return [Hash{String => Hash}]
+    class_attribute :properties, instance_writer: false, instance_reader: false
+    self.properties = {}
 
+    class << self
       # Create a new record with the given subject URI
       #
       # @note
@@ -40,6 +44,82 @@ module Kalimba
       # @return [Object] instance of the model
       def for(rid, params = {})
         new(params.merge(:_subject => rid))
+      end
+
+      # Type URI of RDFS class
+      #
+      # @note Can be set only once
+      #
+      # @param [URI, String] uri
+      # @return [URI]
+      def type(uri = nil)
+        if uri
+          @type ||= URI(uri)
+        else
+          @type
+        end
+      end
+
+      # Base URI for the resource
+      #
+      # @param [String, URI] uri
+      # @return [URI]
+      def base_uri(uri = nil)
+        @base_uri ||= uri && URI(uri.to_s.sub(/\/?$/, "/"))
+      end
+
+      # Property definition
+      #
+      # @param [Symbol, String] name
+      # @param [Hash] params
+      # @option params [String, URI] :predicate
+      # @option params [String, URI] :datatype
+      # @return [void]
+      def property(name, params = {})
+        params[:predicate] = URI(params[:predicate])
+        if params[:datatype].is_a?(Symbol)
+          association_class = const_get(params[:datatype])
+          params[:datatype] = association_class.type
+          class_eval <<-HERE, __FILE__, __LINE__
+            def #{name}_id
+              self.#{name}.try(:id)
+            end
+
+            def #{name}_id=(value)
+              self.#{name} = value.blank? ? nil : #{association_class}.for(value)
+            end
+          HERE
+        else
+          params[:datatype] = URI(params[:datatype])
+        end
+        properties[name.to_s] = params
+
+        define_attribute_method name if self.is_a?(Class)
+
+        class_eval <<-HERE, __FILE__, __LINE__
+          def #{name}=(value)
+            write_attribute "#{name}", value
+          end
+        HERE
+      end
+
+      # Collection definition
+      #
+      # @param (see #property)
+      def has_many(name, params = {})
+        create_reflection(name, params)
+        property name, params.merge(:collection => true)
+
+        class_eval <<-HERE, __FILE__, __LINE__
+          def #{name.to_s.singularize}_ids
+            self.#{name}.map(&:id)
+          end
+
+          def #{name.to_s.singularize}_ids=(ids)
+            klass = self.class.reflect_on_association(:#{name}).klass
+            self.#{name} = ids.reject(&:blank?).map {|i| klass.for(i) }
+          end
+        HERE
       end
     end
 
