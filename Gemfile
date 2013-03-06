@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in kalimba.gemspec
-gemspec
+gemspec name: "kalimba"
+gemspec name: "kalimba-redlander"
 
 gem "rake"

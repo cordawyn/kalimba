@@ -19,12 +19,19 @@ Or install it yourself as:
 
     $ gem install kalimba
 
-> **NOTE**:<br/>
-> You won't be able to do much without a backend to handle your RDF statements.
-> Please add "kalimba-redlander" gem dependency to your Gemfile, and make sure
-> to "require 'kalimba-redlander'" before invoking "require 'kalimba'".
-> [Kalimba-redlander](https://github.com/cordawyn/kalimba-redlander) backend gem
-> is developed independently and so should be other backends.
+## Backends
+
+You won't be able to do much without a backend to handle your RDF statements.
+Please add "kalimba-redlander" gem dependency to your Gemfile, and make sure
+to "require 'kalimba-redlander'" before invoking "require 'kalimba'".
+
+For now, the backends are developed as a part of Kalimba gem for convenience.
+However, you are free to develop your own backend as a separate gem.
+
+### Kalimba::Persistence::Redlander
+
+Redlander adapter for [Kalimba](https://github.com/cordawyn/kalimba). It provides the RDF storage backend for Kalimba.
+
 
 ## Usage
 
