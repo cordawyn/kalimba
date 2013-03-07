@@ -185,5 +185,45 @@ module Kalimba
         raise Kalimba::KalimbaError, "Cannot generate subject without a base URI"
       end
     end
+
+    def type_cast_to_rdf(value, datatype)
+      if value.respond_to?(:to_rdf)
+        value.to_rdf
+      else
+        if XmlSchema.datatype_of(value) == datatype
+          value
+        else
+          v = XmlSchema.instantiate(value.to_s, datatype) rescue nil
+          !v.nil? && XmlSchema.datatype_of(v) == datatype ? v : nil
+        end
+      end
+    end
+
+    def type_cast_from_rdf(value, datatype)
+      if value.is_a?(URI)
+        klass = rdfs_class_by_datatype(datatype)
+        if klass
+          klass.for(value.fragment)
+        else
+          anonymous_class_from(value, datatype).for(value.fragment)
+        end
+      else
+        value
+      end
+    end
+
+    def anonymous_class_from(uri, datatype)
+      (uri = uri.dup).fragment = nil
+      Class.new(Kalimba::Resource).tap do |klass|
+        klass.class_eval do
+          base_uri uri
+          type datatype
+        end
+      end
+    end
+
+    def rdfs_class_by_datatype(datatype)
+      Kalimba::Resource.descendants.detect {|a| a.type == datatype }
+    end
   end
 end
