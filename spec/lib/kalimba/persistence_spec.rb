@@ -11,6 +11,7 @@ describe Kalimba::Persistence do
       type "http://schema.org/OilRig"
       base_uri "http://example.org/oil_rigs"
 
+      property :safe, :predicate => "http://example.org/safe", :datatype => NS::XMLSchema["boolean"]
       property :operator, :predicate => "http://example.org/operator", :datatype => :PersistenceTestPerson
       has_many :saboteurs, :predicate => "http://example.org/saboteur", :datatype => "http://schema.org/Saboteur"
     end
@@ -337,6 +338,24 @@ describe Kalimba::Persistence do
 
       it "should have no changes" do
         expect(person.changes).to be_empty
+      end
+    end
+  end
+
+  describe "special attributes" do
+    let(:rig) { PersistenceTestOilRig.new }
+
+    describe "boolean false value" do
+      subject { rig.safe }
+
+      context "when not set" do
+        it { should be_a NilClass }
+      end
+
+      context "when set to 'false'" do
+        before { rig.safe = false }
+
+        it { should be_a FalseClass }
       end
     end
   end

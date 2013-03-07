@@ -157,10 +157,10 @@ module Kalimba
 
     def read_attribute(name, *args)
       value = attributes[name]
-      if value
-        value
-      else
+      if value.nil?
         self.class.properties[name][:collection] ? [] : nil
+      else
+        value
       end
     end
     alias_method :attribute, :read_attribute
