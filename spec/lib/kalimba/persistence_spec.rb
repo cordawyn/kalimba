@@ -341,22 +341,4 @@ describe Kalimba::Persistence do
       end
     end
   end
-
-  describe "special attributes" do
-    let(:rig) { PersistenceTestOilRig.new }
-
-    describe "boolean false value" do
-      subject { rig.safe }
-
-      context "when not set" do
-        it { should be_a NilClass }
-      end
-
-      context "when set to 'false'" do
-        before { rig.safe = false }
-
-        it { should be_a FalseClass }
-      end
-    end
-  end
 end
