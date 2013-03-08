@@ -4,6 +4,7 @@ require "kalimba/persistence" # fallback to abstract backend
 require "kalimba/validations"
 require "kalimba/callbacks"
 require "kalimba/reflection"
+require "kalimba/attribute_assignment"
 
 module Kalimba
   class Resource
@@ -12,6 +13,7 @@ module Kalimba
     include ActiveModel::Conversion
 
     extend Kalimba::Reflection
+    include Kalimba::AttributeAssignment
 
     include Kalimba::Persistence.backend
 
@@ -147,15 +149,6 @@ module Kalimba
       @destroyed = false
 
       yield self if block_given?
-    end
-
-    # Assign attributes from the given hash
-    #
-    # @param [Hash<[Symbol, String] => Any>] params
-    # @param [Hash] options
-    # @return [void]
-    def assign_attributes(params = {}, options = {})
-      params.each { |name, value| send("#{name}=", value) }
     end
 
     # Freeze the attributes hash such that associations are still accessible,
