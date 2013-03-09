@@ -13,7 +13,7 @@ describe "attribute handling" do
     end
   end
 
-  let(:rig) { AttributeTestOilRig.new }
+  let(:rig) { AttributeTestOilRig.for("bp1") }
 
   describe "boolean value" do
     subject { rig.safe }
@@ -26,6 +26,51 @@ describe "attribute handling" do
       before { rig.safe = false }
 
       it { should be_a FalseClass }
+    end
+  end
+
+  describe "localized string" do
+    before do
+      # populate the storage with literals in different locales
+      { en: "Quarter Pounder with Cheese",
+        fr: "Le Big Mac" }.each do |lang, text|
+        Kalimba.repository.statements.create(subject: rig.subject,
+                                             predicate: rig.class.properties["name"][:predicate],
+                                             object: text.with_lang(lang))
+      end
+    end
+
+    subject { rig.name }
+
+    context "when retrieved" do
+      it "should be retrieved in the language of the current locale" do
+        I18n.with_locale(:fr) do
+          expect(subject.lang).to eql :fr
+        end
+
+        I18n.with_locale(:en) do
+          expect(subject.lang).to eql :en
+        end
+      end
+    end
+
+    context "when stored" do
+      it "should not be overwritten by a localized string in another language" do
+        rig.update_attributes(name: "Burger")
+
+        s1 = Redlander::Statement.new(subject: rig.subject,
+                                      predicate: rig.class.properties["name"][:predicate],
+                                      object: "Quarter Pounder with Cheese".with_lang(:en))
+        s2 = Redlander::Statement.new(subject: rig.subject,
+                                      predicate: rig.class.properties["name"][:predicate],
+                                      object: "Le Big Mac".with_lang(:fr))
+        s3 = Redlander::Statement.new(subject: rig.subject,
+                                      predicate: rig.class.properties["name"][:predicate],
+                                      object: "Burger")
+
+        Kalimba.repository.statements.to_a.should include s1
+        Kalimba.repository.statements.to_a.should include s2
+      end
     end
   end
 
