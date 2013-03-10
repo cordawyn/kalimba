@@ -197,8 +197,12 @@ module Kalimba
             .all(:subject => subject, :predicate => predicate)
             .map { |statement| type_cast_from_rdf(statement.object.value, datatype) }
         else
-          statement = Kalimba.repository.statements.first(:subject => subject, :predicate => predicate)
-          statement && type_cast_from_rdf(statement.object.value, datatype)
+          if self.class.localizable_property?(name)
+            retrieve_localizable_property(name)
+          else
+            statement = Kalimba.repository.statements.first(:subject => subject, :predicate => predicate)
+            statement && type_cast_from_rdf(statement.object.value, datatype)
+          end
         end
       end
 

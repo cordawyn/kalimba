@@ -15,5 +15,5 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_runtime_dependency "kalimba"
-  gem.add_runtime_dependency "redlander", "~> 0.5.2"
+  gem.add_runtime_dependency "redlander", "~> 0.6.0"
 end

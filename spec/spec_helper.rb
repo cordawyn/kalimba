@@ -23,6 +23,7 @@ RSpec.configure do |config|
       type "http://schema.org/Human"
       base_uri "http://example.org/people"
       property :name, :predicate => "http://xmlns.com/foaf/0.1#name", :datatype => NS::XMLSchema["string"]
+      property :rank, :predicate => "http://works.com#rank", :datatype => NS::XMLSchema["integer"]
       has_many :duties, :predicate => "http://works.com#duty", :datatype => NS::XMLSchema["string"]
     end
 

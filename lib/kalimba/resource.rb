@@ -5,6 +5,7 @@ require "kalimba/validations"
 require "kalimba/callbacks"
 require "kalimba/reflection"
 require "kalimba/attribute_assignment"
+require "kalimba/localized_attributes"
 
 module Kalimba
   class Resource
@@ -14,6 +15,7 @@ module Kalimba
 
     extend Kalimba::Reflection
     include Kalimba::AttributeAssignment
+    include Kalimba::LocalizedAttributes
 
     include Kalimba::Persistence.backend
 
@@ -78,6 +80,8 @@ module Kalimba
       # @option params [String, URI] :datatype
       # @return [void]
       def property(name, params = {})
+        name = name.to_s
+
         params[:predicate] = URI(params[:predicate])
         if params[:datatype].is_a?(Symbol)
           association_class = const_get(params[:datatype])
@@ -94,7 +98,7 @@ module Kalimba
         else
           params[:datatype] = URI(params[:datatype])
         end
-        properties[name.to_s] = params
+        self.properties[name] = params
 
         define_attribute_method name if self.is_a?(Class)
 
@@ -103,6 +107,14 @@ module Kalimba
             write_attribute "#{name}", value
           end
         HERE
+
+        if localizable_property?(name)
+          class_eval <<-HERE, __FILE__, __LINE__
+            def localized_#{name.pluralize}
+              @localized_#{name.pluralize} ||= {}
+            end
+          HERE
+        end
       end
 
       # Collection definition
@@ -122,6 +134,11 @@ module Kalimba
             self.#{name} = ids.reject(&:blank?).map {|i| klass.for(i) }
           end
         HERE
+      end
+
+      def inherited(child)
+        super
+        child.properties = properties.dup
       end
     end
 
