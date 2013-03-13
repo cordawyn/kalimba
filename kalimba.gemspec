@@ -7,12 +7,15 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{Kalimba provides ActiveRecord-like capabilities for RDF resources.}
   gem.homepage      = "https://github.com/cordawyn/kalimba"
 
-  gem.files         = `git ls-files`.split($\) - ["lib/kalimba/persistence/redlander.rb"]
+  ignore_files      = %w(Gemfile .gitignore kalimba.gemspec kalimba-redlander.gemspec lib/kalimba/persistence/redlander.rb)
+  gem.files         = `git ls-files`.split($\) - ignore_files
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = "kalimba"
   gem.require_paths = ["lib"]
   gem.version       = Kalimba::VERSION
+
+  gem.license = "The MIT License (MIT)"
 
   gem.add_runtime_dependency "activemodel", "~> 3.2"
   gem.add_runtime_dependency "activesupport", "~> 3.2"

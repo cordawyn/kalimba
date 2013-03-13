@@ -9,10 +9,12 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{Redlander adapter for Kalimba}
   gem.homepage      = "https://github.com/cordawyn/kalimba-redlander"
 
-  gem.files         = ["lib/kalimba/persistence/redlander.rb"]
+  gem.files         = %w(lib/kalimba/persistence/redlander.rb LICENSE)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
+
+  gem.license = "The MIT License (MIT)"
 
   gem.add_runtime_dependency "kalimba"
   gem.add_runtime_dependency "redlander", "~> 0.6.0"
