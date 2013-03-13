@@ -15,8 +15,7 @@ module Kalimba
       end
     end
 
-    def retrieve_localizable_property(name)
-      predicate = self.class.properties[name][:predicate]
+    def retrieve_localizable_property(name, predicate)
       localized_names = send "localized_#{name.pluralize}"
       Kalimba.repository.statements.each(:subject => subject, :predicate => predicate) do |statement|
         value = statement.object.value
@@ -24,6 +23,14 @@ module Kalimba
         localized_names[lang] = value
       end
       localized_names[I18n.locale] || localized_names[nil]
+    end
+
+    def store_localizable_property(name, value, predicate, datatype)
+      localized_names = send "localized_#{name.pluralize}"
+      lang = value.respond_to?(:lang) ? value.lang : nil
+      localized_names.merge!(lang => value).all? do |_, v|
+        store_single_value(v, predicate, datatype)
+      end
     end
   end
 end

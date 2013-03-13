@@ -43,13 +43,23 @@ describe "attribute handling" do
     subject { rig.name }
 
     context "when retrieved" do
-      it "should be retrieved in the language of the current locale" do
-        I18n.with_locale(:fr) do
-          expect(subject.lang).to eql :fr
+      describe "string language" do
+        subject { rig.name.lang }
+
+        context "in :fr locale" do
+          around do |example|
+            I18n.with_locale(:fr) { example.call }
+          end
+
+          it { should eql :fr }
         end
 
-        I18n.with_locale(:en) do
-          expect(subject.lang).to eql :en
+        context "in :en locale" do
+          around do |example|
+            I18n.with_locale(:en) { example.call }
+          end
+
+          it { should eql :en }
         end
       end
     end
@@ -70,6 +80,7 @@ describe "attribute handling" do
 
         Kalimba.repository.statements.to_a.should include s1
         Kalimba.repository.statements.to_a.should include s2
+        Kalimba.repository.statements.to_a.should include s3
       end
     end
   end

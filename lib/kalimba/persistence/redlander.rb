@@ -198,7 +198,7 @@ module Kalimba
             .map { |statement| type_cast_from_rdf(statement.object.value, datatype) }
         else
           if self.class.localizable_property?(name)
-            retrieve_localizable_property(name)
+            retrieve_localizable_property(name, predicate)
           else
             statement = Kalimba.repository.statements.first(:subject => subject, :predicate => predicate)
             statement && type_cast_from_rdf(statement.object.value, datatype)
@@ -214,7 +214,9 @@ module Kalimba
         value = read_attribute(name)
         if value
           datatype = self.class.properties[name][:datatype]
-          if self.class.properties[name][:collection]
+          if self.class.localizable_property?(name)
+            store_localizable_property(name, value, predicate, datatype)
+          elsif self.class.properties[name][:collection]
             value.to_set.all? { |v| store_single_value(v, predicate, datatype, options) }
           else
             store_single_value(value, predicate, datatype, options)
@@ -226,6 +228,8 @@ module Kalimba
 
       def store_single_value(value, predicate, datatype, options = {})
         value =
+          # TODO: check for the types that are acceptable by the property,
+          # not the types of values themselves!
           if value.is_a?(Kalimba::Resource)
             store_single_resource(value, options)
           else
