@@ -201,7 +201,7 @@ module Kalimba
 
     def type_cast_from_rdf(value, datatype)
       if value.is_a?(URI)
-        klass = rdfs_class_by_datatype(datatype)
+        klass = Kalimba::Resource.from_datatype(datatype)
         if klass
           klass.for(value.fragment)
         else
@@ -220,10 +220,6 @@ module Kalimba
           type datatype
         end
       end
-    end
-
-    def rdfs_class_by_datatype(datatype)
-      Kalimba::Resource.descendants.detect {|a| a.type == datatype }
     end
   end
 end

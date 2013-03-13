@@ -72,32 +72,41 @@ module Kalimba
         @base_uri ||= uri && URI(uri.to_s.sub(/\/?$/, "/"))
       end
 
-      # Property definition
+      # Property declaration.
+      #
+      # Model attributes should be declared using `property`.
+      # Two mandatory parameters are `:predicate` and `:datatype`,
+      # that can accept URIs as URI or String objects.
+      # You can also use "NS::" namespaces provided by `xml_schema` gem.
       #
       # @param [Symbol, String] name
       # @param [Hash] params
       # @option params [String, URI] :predicate
-      # @option params [String, URI] :datatype
+      # @option params [String, URI, Symbol] :datatype
+      # @option params [Boolean] :collection
       # @return [void]
       def property(name, params = {})
         name = name.to_s
 
         params[:predicate] = URI(params[:predicate])
-        if params[:datatype].is_a?(Symbol)
-          association_class = const_get(params[:datatype])
-          params[:datatype] = association_class.type
+        association = Kalimba::Resource.from_datatype(params[:datatype])
+        if association
+          params[:datatype] = association.type
           class_eval <<-HERE, __FILE__, __LINE__
             def #{name}_id
               self.#{name}.try(:id)
             end
 
             def #{name}_id=(value)
-              self.#{name} = value.blank? ? nil : #{association_class}.for(value)
+              self.#{name} = value.blank? ? nil : #{association}.for(value)
             end
           HERE
         else
           params[:datatype] = URI(params[:datatype])
         end
+
+        define_collection(name, params) if params[:collection]
+
         self.properties[name] = params
 
         define_attribute_method name if self.is_a?(Class)
@@ -117,28 +126,78 @@ module Kalimba
         end
       end
 
-      # Collection definition
+      # Collection definition.
+      #
+      # "Has-many" relations/collections are declared with help of `has_many` method.
+      # It accepts the same parameters as `property` (basically, it is an alias to
+      # `property name, ..., collection: true`).
+      # Additionally, you can specify `:datatype` as a name of another model,
+      # as seen below. If you specify datatype as an URI, it will be automatically
+      # resolved to either a model (having the same `type`) or anonymous class.
+      #
+      # @example
+      #   has_many :friends, :predicate => "http://schema.org/Person", :datatype => :Person
+      #
+      # You don't have to treat `has_many` as an association with other models, however.
+      # It is acceptable to declare a collection of strings or any other resources
+      # using `has_many`:
+      #
+      # @example
+      #   TODO
       #
       # @param (see #property)
       def has_many(name, params = {})
-        create_reflection(name, params)
         property name, params.merge(:collection => true)
+      end
 
-        class_eval <<-HERE, __FILE__, __LINE__
-          def #{name.to_s.singularize}_ids
-            self.#{name}.map(&:id)
+      # Return Kalimba resource class associated with the given datatype.
+      #
+      # @param [String, URI, Symbol] uri
+      # @return [Kalimba::Resource]
+      def from_datatype(datatype)
+        datatype =
+          case datatype
+          when URI
+            datatype
+          when Symbol
+            const_get(datatype).type
+          when String
+            if datatype =~ URI.regexp
+              URI(datatype)
+            else
+              const_get(datatype).type
+            end
+          else
+            if datatype.respond_to?(:uri)
+              datatype.uri
+            else
+              raise KalimbaError, "invalid datatype identifier"
+            end
           end
-
-          def #{name.to_s.singularize}_ids=(ids)
-            klass = self.class.reflect_on_association(:#{name}).klass
-            self.#{name} = ids.reject(&:blank?).map {|i| klass.for(i) }
-          end
-        HERE
+        Kalimba::Resource.descendants.detect {|a| a.type == datatype }
       end
 
       def inherited(child)
         super
         child.properties = properties.dup
+      end
+
+
+      private
+
+      def define_collection(name, params)
+        create_reflection(name, params)
+
+        class_eval <<-HERE, __FILE__, __LINE__
+          def #{name.singularize}_ids
+            self.#{name}.map(&:id)
+          end
+
+          def #{name.singularize}_ids=(ids)
+            klass = self.class.reflect_on_association(:#{name}).klass
+            self.#{name} = ids.reject(&:blank?).map {|i| klass.for(i) }
+          end
+        HERE
       end
     end
 
