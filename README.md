@@ -5,6 +5,7 @@ Combined with the raw power of Redlander gem, it introduces the world of Ruby on
 to the world of RDF, triple storages, LinkedData and Semantic Web.
 The resources of semantic graph storages become accessible in a customary form of "models".
 
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -19,6 +20,7 @@ Or install it yourself as:
 
     $ gem install kalimba
 
+
 ## Backends
 
 You won't be able to do much without a backend to handle your RDF statements.
@@ -27,6 +29,7 @@ to "require 'kalimba-redlander'" before invoking "require 'kalimba'".
 
 For now, the backends are developed as a part of Kalimba gem for convenience.
 However, you are free to develop your own backend as a separate gem.
+
 
 ### Kalimba::Persistence::Redlander
 
@@ -45,6 +48,10 @@ Your model must be inherited from Kalimba::Resource:
 
       # Define base URI for the instances of this resource
       base_uri "http://example.org/people"
+
+      property :name, :predicate => NS::FOAF["name"], :datatype => NS:XMLSchema["string"]
+
+      has_many :friends, :predicate => "http://schema.org/Person", :datatype => :Person
     end
 
 From this point on, you may treat your model just like
@@ -54,8 +61,35 @@ any fully-fledged clone of ActiveModel (i.e. ActiveRecord model)
     $ alice.valid?
     $ alice.save!
     ...
+    $ alice.friends << bob
+
+> Note that Kalimba associations are not fully API-compliant with ActiveRecord associations (yet?).
+> One major feature missing is "association proxy" which would enable tricks like
+> `alice.friends.destroy_all`. Presently, Kalimba "associations" return a simple collection (Array).
 
 For other details refer to YARD documentation for Kalimba::Resource module.
+
+
+## Regarding RDFS/OWL features
+
+It should be also noted that "special" features of RDFS/OWL like inverse properties or
+transitive properties and so on, are *not* specifically handled by Kalimba (or Redlander backend).
+Availability of any "virtual" data which is supposed to be available as a product of reasoning,
+is up to the graph storage that you use with the *backend*.
+
+So (provided that "hasFriend" is "owl:inverseOf" "isFriendOf") you may end with something like this:
+
+    alice.has_friend  # => bob
+    bob.is_friend_of  # => nil
+
+... unless your graph storage provides reasoning by default.
+
+That said, certain graph storages that are said to have reasoning capabilities,
+do not have reasoning enabled by default (e.g. [Virtuoso](http://virtuoso.openlinksw.com/)),
+and require that you explicitly enable it using special options or a custom SPARQL syntax.
+While it is possible to "hack" and modify the options or SPARQL queries that are generated
+by Kalimba (or its backend), this is not currently available.
+
 
 ## Validations
 

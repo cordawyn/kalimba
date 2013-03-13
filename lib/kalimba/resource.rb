@@ -19,7 +19,13 @@ module Kalimba
 
     include Kalimba::Persistence.backend
 
+    # Subject URI if the resource
     attr_reader :subject
+
+    # Hash{String => any} with the resource attributes
+    #
+    # @note
+    #   Do not modify it directly, unless you know what you are doing!
     attr_accessor :attributes
 
     # Properties with their options
@@ -33,11 +39,12 @@ module Kalimba
       #
       # @note
       #   In the world of RDF a resource cannot be instantly defined as "new",
-      #   because any arbitrary subject you define might be already present
-      #   in the storage (see: "Open World Assumption").
-      #   So you can supply an ID of an existing resource.
-      #   Don't forget to {#reload} it, if you need its actual attributes
-      #   instantiated as well.
+      #   because any arbitrary subject that you specify might be already present
+      #   in the storage.
+      #   So you can use ID of an existing resource as well.
+      #
+      #   Don't forget to {#reload} the resource, if you need its actual attributes
+      #   (if any) pulled from the storage.
       #
       # @note
       #   The resource ID that you supply will be added as an URI
@@ -72,7 +79,7 @@ module Kalimba
         @base_uri ||= uri && URI(uri.to_s.sub(/\/?$/, "/"))
       end
 
-      # Property declaration.
+      # Property declaration
       #
       # Model attributes should be declared using `property`.
       # Two mandatory parameters are `:predicate` and `:datatype`,
@@ -126,7 +133,7 @@ module Kalimba
         end
       end
 
-      # Collection definition.
+      # Collection definition
       #
       # "Has-many" relations/collections are declared with help of `has_many` method.
       # It accepts the same parameters as `property` (basically, it is an alias to
@@ -143,14 +150,14 @@ module Kalimba
       # using `has_many`:
       #
       # @example
-      #   TODO
+      #   has_many :duties, :predicate => "http://works.com#duty", :datatype => NS::XMLSchema["string"]
       #
       # @param (see #property)
       def has_many(name, params = {})
         property name, params.merge(:collection => true)
       end
 
-      # Return Kalimba resource class associated with the given datatype.
+      # Return Kalimba resource class associated with the given datatype
       #
       # @param [String, URI, Symbol] uri
       # @return [Kalimba::Resource]
@@ -177,13 +184,13 @@ module Kalimba
         Kalimba::Resource.descendants.detect {|a| a.type == datatype }
       end
 
+
+      private
+
       def inherited(child)
         super
         child.properties = properties.dup
       end
-
-
-      private
 
       def define_collection(name, params)
         create_reflection(name, params)
@@ -202,6 +209,8 @@ module Kalimba
     end
 
     # Create a new record
+    #
+    # If given a block, yields the created object into it.
     #
     # @param [Hash<[Symbol, String] => Any>] params properties to assign
     def initialize(params = {}, options = {})
