@@ -193,7 +193,8 @@ module Kalimba
       end
 
       def define_collection(name, params)
-        create_reflection(name, params)
+        # Rails reflections require symbolized names
+        create_reflection(name.to_sym, params)
 
         class_eval <<-HERE, __FILE__, __LINE__
           def #{name.singularize}_ids
