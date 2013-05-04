@@ -112,7 +112,11 @@ module Kalimba
           params[:datatype] = URI(params[:datatype])
         end
 
-        define_collection(name, params) if params[:collection]
+        if params[:collection] && association
+          # Do not define reflections and _ids accessors
+          # for non-Kalimba resources.
+          define_collection(name, params.merge(datatype: association))
+        end
 
         self.properties[name] = params
 
@@ -151,6 +155,9 @@ module Kalimba
       #
       # @example
       #   has_many :duties, :predicate => "http://works.com#duty", :datatype => NS::XMLSchema["string"]
+      #
+      # Note however, that if given datatype does not refer to a Kalimba::Resource class,
+      # no reflections and `_ids` and `_ids=` accessors will be created in that case.
       #
       # @param (see #property)
       def has_many(name, params = {})
