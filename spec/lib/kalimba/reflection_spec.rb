@@ -26,7 +26,8 @@ describe "reflection" do
       it "should have proper accessors" do
         expect(subject.macro).to eql :has_many
         expect(subject.name).to eql :neighbours
-        expect(subject.options[:class_name]).to eql ReflectionTestOilRig
+        expect(subject.klass).to eql ReflectionTestOilRig
+        expect(subject.class_name).to eql "ReflectionTestOilRig"
       end
     end
   end
