@@ -227,14 +227,21 @@ module Kalimba
       end
 
       def store_single_value(value, predicate, datatype, options = {})
-        value =
-          # TODO: check for the types that are acceptable by the property,
-          # not the types of values themselves!
-          if value.is_a?(Kalimba::Resource)
-            store_single_resource(value, options)
+        # TODO: check for the types that are acceptable by the property,
+        # not the types of values themselves!
+        if value.is_a?(Kalimba::Resource)
+          if store_single_resource(value, options)
+            # proceed with the saved association
+            value = value.subject
           else
-            type_cast_to_rdf(value, datatype)
+            # could not save the association, bail out
+            return false
           end
+        else
+          value = type_cast_to_rdf(value, datatype)
+        end
+
+        # TODO: This doesn't persist "false". Should it?
         if value
           statement = ::Redlander::Statement.new(:subject => subject, :predicate => predicate, :object => ::Redlander::Node.new(value))
           Kalimba.repository.statements.add(statement)
@@ -250,6 +257,9 @@ module Kalimba
         if options[:parent_subject] != resource.subject &&
             must_be_persisted?(resource)
           resource.save(:parent_subject => subject)
+        else
+          # no save was required and that's not an error
+          true
         end
       end
 

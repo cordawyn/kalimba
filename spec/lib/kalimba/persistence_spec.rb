@@ -260,7 +260,7 @@ describe Kalimba::Persistence do
         end
       end
 
-      context "to collections" do
+      context "to collections of non-Kalimba resources" do
         before { person.duties = %w(building designing) }
 
         context "when saved" do
@@ -268,6 +268,27 @@ describe Kalimba::Persistence do
 
           it "should be added statements with changed attributes (type + duties*2)" do
             expect(Kalimba.repository.size).to eql 3
+          end
+
+          it "should include the collection" do
+            person.reload
+            expect(person.duties).to eql %w(building designing)
+          end
+        end
+      end
+
+      context "to collections of Kalimba resources" do
+        before do
+          @berk = Engineer.for("Berk")
+          person.coworkers = [@berk]
+        end
+
+        context "when saved" do
+          before { person.save }
+
+          it "should retain the list of coworkers" do
+            person.reload
+            expect(person.coworkers).to eql [@berk]
           end
         end
       end
