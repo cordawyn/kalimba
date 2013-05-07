@@ -110,7 +110,7 @@ module Kalimba
 
         self.properties[name] = params
 
-        define_attribute_method name if self.is_a?(Class)
+        define_attribute_method name
 
         class_eval <<-HERE, __FILE__, __LINE__
           def #{name}=(value)
