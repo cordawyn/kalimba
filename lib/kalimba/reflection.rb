@@ -9,8 +9,8 @@ module Kalimba
       @reflections ||= {}
     end
 
-    def create_reflection(name, params = {})
-      reflections[name] = AssociationReflection.new(name, {class_name: params[:datatype]})
+    def create_reflection(name, klass)
+      reflections[name] = AssociationReflection.new(name, {class_name: klass})
     end
 
     def reflect_on_association(association)

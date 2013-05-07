@@ -96,26 +96,16 @@ module Kalimba
         name = name.to_s
 
         params[:predicate] = URI(params[:predicate])
-        association = Kalimba::Resource.from_datatype(params[:datatype])
-        if association
-          params[:datatype] = association.type
-          class_eval <<-HERE, __FILE__, __LINE__
-            def #{name}_id
-              self.#{name}.try(:id)
-            end
-
-            def #{name}_id=(value)
-              self.#{name} = value.blank? ? nil : #{association}.for(value)
-            end
-          HERE
+        association_class = Kalimba::Resource.from_datatype(params[:datatype])
+        if association_class
+          params[:datatype] = association_class
+          if params[:collection]
+            define_collection(name, association_class)
+          else
+            define_resource(name, association_class)
+          end
         else
           params[:datatype] = URI(params[:datatype])
-        end
-
-        if params[:collection] && association
-          # Do not define reflections and _ids accessors
-          # for non-Kalimba resources.
-          define_collection(name, params.merge(datatype: association))
         end
 
         self.properties[name] = params
@@ -169,6 +159,8 @@ module Kalimba
       # @param [String, URI, Symbol] uri
       # @return [Kalimba::Resource]
       def from_datatype(datatype)
+        return datatype if datatype.is_a?(Class) && datatype.ancestors.include?(Kalimba::Resource)
+
         datatype =
           case datatype
           when URI
@@ -199,9 +191,21 @@ module Kalimba
         child.properties = properties.dup
       end
 
-      def define_collection(name, params)
+      def define_resource(name, klass)
+        class_eval <<-HERE, __FILE__, __LINE__
+          def #{name}_id
+            self.#{name}.try(:id)
+          end
+
+          def #{name}_id=(value)
+            self.#{name} = value.blank? ? nil : #{klass}.for(value)
+          end
+        HERE
+      end
+
+      def define_collection(name, klass)
         # Rails reflections require symbolized names
-        create_reflection(name.to_sym, params)
+        create_reflection(name.to_sym, klass)
 
         class_eval <<-HERE, __FILE__, __LINE__
           def #{name.singularize}_ids
