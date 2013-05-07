@@ -39,6 +39,8 @@ describe Kalimba::Resource do
 
       it { should respond_to :attributes }
 
+      it { should_not eql ResourceTestPerson.new }
+
       context "created via 'for'" do
         subject { ResourceTestPerson.for "charlie" }
 
@@ -47,6 +49,8 @@ describe Kalimba::Resource do
         it "should set subject to the given URI" do
           expect(subject.subject).to eql URI("http://example.org/people/#charlie")
         end
+
+        it { should eql ResourceTestPerson.for("charlie") }
       end
 
       describe "serialization" do

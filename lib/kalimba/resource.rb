@@ -270,6 +270,19 @@ module Kalimba
       subject
     end
 
+    # Resource equality
+    #
+    # Two Kalimba resources are equal if their subjects are equal.
+    # We do not tell between persisted or not persisted RDF resources.
+    # However, "new" resources (those without a subject) are never equal.
+    #
+    # @param [Kalimba::Resource] other other Kalimba::Resource
+    # @return [Boolean]
+    def eql?(other)
+      other.is_a?(Kalimba::Resource) && !subject.nil? && other.subject == subject
+    end
+    alias == eql?
+
     private
 
     include Kalimba::Callbacks
