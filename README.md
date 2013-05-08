@@ -1,9 +1,10 @@
 # Kalimba
 
-Kalimba is an clone of ActiveRecord, based on ActiveModel framework.
+Kalimba is a clone of ActiveRecord, based on ActiveModel framework.
 Combined with the raw power of Redlander gem, it introduces the world of Ruby on Rails
-to the world of RDF, triple storages, LinkedData and Semantic Web.
-The resources of semantic graph storages become accessible in a customary form of "models".
+to the world of RDF, triple storages, Linked Data and Semantic Web.
+And thus the resources of the semantic graph become accessible
+in a more customary form of [ORM classes](https://en.wikipedia.org/wiki/Object-relational_mapping).
 
 
 ## Installation
@@ -23,7 +24,7 @@ Or install it yourself as:
 
 ## Backends
 
-You won't be able to do much without a backend to handle your RDF statements.
+You won't be able to do much without a backend to handle your RDF data.
 Please add "kalimba-redlander" gem dependency to your Gemfile, and make sure
 to "require 'kalimba-redlander'" before invoking "require 'kalimba'".
 
@@ -49,7 +50,7 @@ Your model must be inherited from Kalimba::Resource:
       # Define base URI for the instances of this resource
       base_uri "http://example.org/people"
 
-      property :name, :predicate => NS::FOAF["name"], :datatype => NS:XMLSchema["string"]
+      property :name, :predicate => NS::FOAF["name"], :datatype => NS::XMLSchema["string"]
 
       has_many :friends, :predicate => "http://schema.org/Person", :datatype => :Person
     end
@@ -61,13 +62,14 @@ any fully-fledged clone of ActiveModel (i.e. ActiveRecord model)
     $ alice.valid?
     $ alice.save!
     ...
-    $ alice.friends << bob
+    $ alice.friends = [bob, charlie]
 
 > Note that Kalimba associations are not fully API-compliant with ActiveRecord associations (yet?).
 > One major feature missing is "association proxy" which would enable tricks like
 > `alice.friends.destroy_all`. Presently, Kalimba "associations" return a simple collection (Array).
 
-For other details refer to YARD documentation for Kalimba::Resource module.
+For other details refer to YARD documentation for
+[Kalimba::Resource](http://rubydoc.info/gems/kalimba/Kalimba/Resource) module.
 
 
 ## Regarding RDFS/OWL features
@@ -93,11 +95,11 @@ by Kalimba (or its backend), this is not currently available.
 
 ## Validations
 
-For details, refer to ActionModel::Validations documentation.
+For details, refer to [ActionModel::Validations](http://rubydoc.info/gems/activemodel/3.2.13/ActiveModel/Validations) documentation.
 
     class Human < Kalimba::Resource
       base_uri "http://example.com/people/"
-      property :name, :predicate => NS::FOAF["name"], :datatype => NS:XMLSchema["string"]
+      property :name, :predicate => NS::FOAF["name"], :datatype => NS::XMLSchema["string"]
 
       validates_presence_of :name
     end
@@ -121,7 +123,7 @@ Kalimba supports :before, :after and :around callbacks for :save, :create, :upda
       end
     end
 
-For details, refer to ActionModel::Callbacks documentation.
+For details, refer to [ActionModel::Callbacks](http://rubydoc.info/gems/activemodel/3.2.13/ActiveModel/Callbacks) documentation.
 
 ## Contributing
 
