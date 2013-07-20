@@ -6,6 +6,7 @@ require "kalimba/callbacks"
 require "kalimba/reflection"
 require "kalimba/attribute_assignment"
 require "kalimba/localized_attributes"
+require "kalimba/collection_proxy"
 
 module Kalimba
   class Resource
@@ -208,6 +209,10 @@ module Kalimba
         create_reflection(name.to_sym, klass)
 
         class_eval <<-HERE, __FILE__, __LINE__
+          def #{name}
+            @#{name}_proxy ||= CollectionProxy.new(self, "#{name}")
+          end
+
           def #{name.singularize}_ids
             self.#{name}.map(&:id)
           end

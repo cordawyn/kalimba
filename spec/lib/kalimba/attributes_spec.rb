@@ -6,6 +6,7 @@ describe "attribute handling" do
       type "http://schema.org/OilRig"
       base_uri "http://example.org/oil_rigs"
 
+      has_many :neighbours, :predicate => "http://example.org/attribute_test_oil_rigs", :datatype => :AttributeTestOilRig
       property :safe, :predicate => "http://example.org/safe", :datatype => NS::XMLSchema["boolean"]
       property :name, :predicate => "http://example.org/name", :datatype => NS::XMLSchema["string"]
       property :local_time, :predicate => "http://example.org/time", :datatype => NS::XMLSchema["time"]
@@ -139,6 +140,18 @@ describe "attribute handling" do
 
         it { should be_a Date }
         it { should eql Date.new(2013, 3, 8) }
+      end
+    end
+  end
+
+  describe "collection" do
+    subject { rig.neighbours }
+
+    context "when changed in-place" do
+      before { rig.neighbours << AttributeTestOilRig.new }
+
+      it "should be marked as changed" do
+        expect(rig.neighbours_changed?).to be_true
       end
     end
   end
